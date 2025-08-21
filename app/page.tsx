@@ -1,163 +1,102 @@
-"use client";
-import { useEffect, useMemo, useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
+'use client';
+
+import { useMemo, useState } from 'react';
 
 type Job = {
   id: string;
   title: string;
   company: string;
-  type: "Remote"|"Hybrid"|"On-site";
-  branch: string;
   location: string;
-  language: "nl"|"en";
-  url?: string;
-  createdAt: string;
+  type: "Full-time" | "Part-time" | "Contract" | "Internship";
+  salary?: string;
+  tags: string[];
+  description: string;
+  posted: string;
 };
 
-const translations = {
-  nl: {
-    search: "Zoek vacatures, bedrijven of mensen...",
-    vacatures: "Vacatures",
-    netwerk: "Netwerk",
-    aanmelden: "Aanmelden",
-    vind: "Vind jouw droombaan",
-    gemak: "met gemak",
-    sub: "Sluit je aan bij duizenden jonge professionals en ontdek de beste kansen in jouw vakgebied.",
-    begin: "Begin vandaag",
-    ai: "AI Career Match",
-    nieuw: "Nieuw toegevoegde vacatures",
-    solliciteer: "Solliciteer",
-    rights: "Alle rechten voorbehouden."
-  },
-  en: {
-    search: "Search jobs, companies or people...",
-    vacatures: "Jobs",
-    netwerk: "Network",
-    aanmelden: "Sign up",
-    vind: "Find your dream job",
-    gemak: "with ease",
-    sub: "Join thousands of young professionals and discover the best opportunities in your field.",
-    begin: "Get started today",
-    ai: "AI Career Match",
-    nieuw: "Recently added jobs",
-    solliciteer: "Apply",
-    rights: "All rights reserved."
-  }
-};
+const JOBS: Job[] = [
+  { id: "jp-001", title: "AI Search Engineer", company: "JobPilot Labs", location: "Wrocław / Remote", type: "Full-time", salary: "18–26k PLN / mnd B2B", tags: ["AI","Search","TypeScript","Next.js"], description: "Bouw semantische zoekfunctionaliteit (RAG, embeddings) en performance indexing (caching, sharding).", posted: "2 days ago" },
+  { id: "jp-002", title: "React/Next.js Frontend Developer", company: "JobPilot", location: "Remote (EU)", type: "Contract", salary: "100–140 PLN / uur", tags: ["React","Next.js","Tailwind"], description: "Ontwerp de UX van een moderne job-zoekervaring met filters, profile cards en onboarding flows.", posted: "1 day ago" },
+  { id: "jp-003", title: "Product Designer (UX/UI)", company: "JobPilot Studio", location: "Warszawa / Hybrid", type: "Full-time", tags: ["Figma","Design System","WCAG"], description: "Maak een toegankelijk design system (WCAG 2.2 AA), component‑bibliotheek en mobile-first flows.", posted: "5 days ago" },
+];
 
-export default function HomePage() {
-  const [activeFilter, setActiveFilter] = useState<"all"|"Remote"|"Hybrid"|"On-site">("all");
-  const [language, setLanguage] = useState<"nl"|"en">("nl");
-  const [query, setQuery] = useState("");
-  const [jobs, setJobs] = useState<Job[]>([]);
+export default function Home() {
+  const [q, setQ] = useState('');
+  const [tag, setTag] = useState<string | null>(null);
 
-  useEffect(() => {
-    const ctrl = new AbortController();
-    fetch(`/api/jobs?lang=${language}`, { signal: ctrl.signal })
-      .then(r => r.json())
-      .then(d => setJobs(d.items))
-      .catch(()=>{});
-    return () => ctrl.abort();
-  }, [language]);
+  const results = useMemo(() => {
+    const s = q.trim().toLowerCase();
+    return JOBS.filter((j) => {
+      const hay = `${j.title} ${j.company} ${j.location} ${j.description} ${j.tags.join(" ")}`.toLowerCase();
+      const matchesQuery = !s || hay.includes(s);
+      const matchesTag = !tag || j.tags.map(t=>t.toLowerCase()).includes(tag.toLowerCase());
+      return matchesQuery && matchesTag;
+    });
+  }, [q, tag]);
 
-  const shown = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return jobs
-      .filter(j => (activeFilter === "all" || j.type === activeFilter))
-      .filter(j => !q || `${j.title} ${j.company} ${j.branch} ${j.location}`.toLowerCase().includes(q));
-  }, [jobs, activeFilter, query]);
-
-  const t = translations[language];
+  const allTags = useMemo(() => Array.from(new Set(JOBS.flatMap(j=>j.tags))).sort(), []);
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB] text-[#111827] font-sans">
-      <header className="w-full bg-white border-b border-gray-200 shadow-sm">
-        <div className="container flex items-center justify-between h-16">
-          <div className="flex items-center space-x-2">
-            <img src="/logo.svg" alt="WeAreJobPilot" className="h-8 w-8" />
-            <span className="text-lg font-bold text-brand flex items-center space-x-1">
-              <span>WeAre</span><span className="text-black">_JobPilot</span>
-            </span>
+    <main>
+      <header className="border-b border-neutral-800">
+        <div className="container py-6 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-9 w-9 rounded-xl bg-emerald-500 grid place-items-center font-extrabold text-neutral-900">JP</div>
+            <div>
+              <h1 className="text-xl font-semibold">We Are JobPilot</h1>
+              <p className="text-sm text-neutral-400">Vind sneller werk. Slimmer zoeken. Minder ruis.</p>
+            </div>
           </div>
-          <div className="flex-1 max-w-lg mx-6">
-            <Input type="text" placeholder={t.search} value={query} onChange={e=>setQuery(e.target.value)} />
-          </div>
-          <div className="flex items-center space-x-4">
-            <Button variant="ghost" className="text-sm font-medium">{t.vacatures}</Button>
-            <Button className="bg-brand hover:bg-brand-dark text-white rounded-md px-4 py-2 text-sm font-semibold">
-              {t.aanmelden}
-            </Button>
-            <select value={language} onChange={(e)=>setLanguage(e.target.value as any)} className="border rounded px-2 py-1 text-sm">
-              <option value="nl">NL</option>
-              <option value="en">EN</option>
-            </select>
-          </div>
+          <nav className="text-sm text-neutral-400 flex gap-6">
+            <a href="#" className="hover:text-neutral-100">Jobs</a>
+            <a href="#" className="hover:text-neutral-100">Companies</a>
+            <a href="#" className="hover:text-neutral-100">Sign in</a>
+          </nav>
         </div>
       </header>
 
-      <section className="pt-14 pb-12 bg-gradient-to-r from-[#E0F2FE] via-white to-[#F9FAFB]">
-        <div className="container flex flex-col md:flex-row items-center gap-10">
-          <div className="flex-1 space-y-5">
-            <h1 className="text-4xl md:text-5xl font-extrabold leading-tight">
-              {t.vind} <span className="text-brand">{t.gemak}</span>
-            </h1>
-            <p className="text-lg text-gray-600 max-w-md">{t.sub}</p>
-            <div className="flex space-x-4">
-              <a href="/#jobs" className="btn btn-primary">{t.begin}</a>
-              <a href="/ai" className="btn btn-outline">{t.ai}</a>
-            </div>
-          </div>
-          <div className="flex-1 flex justify-center">
-            <img
-              src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&q=80"
-              alt="Blije jongeren samenwerken"
-              className="rounded-2xl shadow-lg object-cover"
-            />
-          </div>
+      <section className="container py-10">
+        <div className="mb-6">
+          <h2 className="text-2xl font-semibold">Zoek vacatures</h2>
+          <p className="text-neutral-400">MVP – client-side filter op mock data.</p>
         </div>
-      </section>
 
-      <section className="bg-white border-t border-b border-gray-200 py-5">
-        <div className="container flex flex-wrap items-center gap-4">
-          {["all","Remote","Hybrid","On-site"].map(f => (
-            <Button key={f} variant={activeFilter === f ? "primary":"outline"} onClick={()=>setActiveFilter(f as any)}>
-              {f === "all" ? "Alle" : f}
-            </Button>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <input value={q} onChange={(e)=>setQ(e.target.value)} placeholder="Zoek op titel, bedrijf, locatie of skill…" className="input" />
+          <select value={tag ?? ""} onChange={(e)=>setTag(e.target.value || null)} className="select sm:w-56">
+            <option value="">Alle tags</option>
+            {allTags.map((t)=>(<option key={t} value={t}>{t}</option>))}
+          </select>
+        </div>
+
+        <div className="mt-6 grid gap-4">
+          {results.length === 0 && (<div className="card p-6 text-neutral-300">Geen resultaten. Probeer een andere term of tag.</div>)}
+          {results.map((job)=>(
+            <article key={job.id} className="card p-6 hover:border-emerald-600 transition">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-lg font-semibold">{job.title}</h3>
+                  <p className="text-neutral-400">{job.company} • {job.location} • {job.type}</p>
+                </div>
+                <div className="text-sm text-neutral-300">{job.salary ?? ""}</div>
+              </div>
+              <p className="mt-3 text-neutral-300">{job.description}</p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {job.tags.map((t)=>(
+                  <button key={t} onClick={()=>setTag(t)} className="tag hover:border-emerald-600">#{t}</button>
+                ))}
+              </div>
+              <div className="mt-4 text-xs text-neutral-500">Geplaatst: {job.posted}</div>
+            </article>
           ))}
         </div>
       </section>
 
-      <section id="jobs" className="py-16">
-        <div className="container space-y-8">
-          <h2 className="text-2xl font-bold">{t.nieuw}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {shown.map((job) => (
-              <Card key={job.id} className="rounded-xl border border-gray-200">
-                <CardContent className="space-y-4">
-                  <div className="flex items-center space-x-4">
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage src={`https://randomuser.me/api/portraits/men/${parseInt(job.id,10)%80}.jpg`} alt={job.company} />
-                    </Avatar>
-                    <div>
-                      <p className="font-semibold text-base">{job.title}</p>
-                      <p className="text-sm text-gray-500">{job.company}</p>
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-500">{job.branch} · {job.location} · {job.type}</p>
-                  {job.url ? (
-                    <a className="btn btn-primary w-full text-center" href={job.url} target="_blank" rel="noreferrer">{t.solliciteer}</a>
-                  ) : (
-                    <a className="btn btn-primary w-full text-center" href={`mailto:jobs@wearejobpilot.com?subject=Apply: ${encodeURIComponent(job.title)}`}>{t.solliciteer}</a>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+      <footer className="border-t border-neutral-800">
+        <div className="container py-8 text-neutral-400 text-sm">
+          © {new Date().getFullYear()} We Are JobPilot — MVP
         </div>
-      </section>
-    </div>
+      </footer>
+    </main>
   );
 }

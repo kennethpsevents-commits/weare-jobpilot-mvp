@@ -1,13 +1,8 @@
-import type { MetadataRoute } from "next";
+import type { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const base = 'https://wearejobpilot.com';
   return [
-    { url: `${base}/`, lastModified: new Date() },
-    { url: `${base}/employers`, lastModified: new Date() },
-    { url: `${base}/ai`, lastModified: new Date() },
-    { url: `${base}/legal/privacy`, lastModified: new Date() },
-    { url: `${base}/legal/terms`, lastModified: new Date() },
-    { url: `${base}/legal/cookies`, lastModified: new Date() }
+    { url: base, lastModified: new Date() },
   ];
 }
