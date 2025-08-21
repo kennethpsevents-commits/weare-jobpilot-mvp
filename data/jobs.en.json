@@ -1,0 +1,77 @@
+[
+  {
+    "id": "6",
+    "title": "Backend Engineer",
+    "company": "CloudScale",
+    "type": "Remote",
+    "branch": "IT",
+    "location": "Poland",
+    "language": "en",
+    "tags": [
+      "node",
+      "aws"
+    ],
+    "url": "https://example.com/apply/6",
+    "createdAt": "2025-08-01T12:00:00Z"
+  },
+  {
+    "id": "7",
+    "title": "Growth Marketer",
+    "company": "LaunchLab",
+    "type": "Hybrid",
+    "branch": "Marketing",
+    "location": "Netherlands",
+    "language": "en",
+    "tags": [
+      "ads",
+      "funnels"
+    ],
+    "url": "https://example.com/apply/7",
+    "createdAt": "2025-08-02T12:00:00Z"
+  },
+  {
+    "id": "8",
+    "title": "Product Manager",
+    "company": "EuroTech",
+    "type": "On-site",
+    "branch": "Product",
+    "location": "Germany",
+    "language": "en",
+    "tags": [
+      "roadmap",
+      "ux"
+    ],
+    "url": "https://example.com/apply/8",
+    "createdAt": "2025-08-03T12:00:00Z"
+  },
+  {
+    "id": "9",
+    "title": "Data Scientist",
+    "company": "ModelWorks",
+    "type": "Remote",
+    "branch": "Data",
+    "location": "Remote",
+    "language": "en",
+    "tags": [
+      "ml",
+      "python"
+    ],
+    "url": "https://example.com/apply/9",
+    "createdAt": "2025-08-04T12:00:00Z"
+  },
+  {
+    "id": "10",
+    "title": "Sales Manager",
+    "company": "EuroTrade",
+    "type": "On-site",
+    "branch": "Sales",
+    "location": "Germany",
+    "language": "en",
+    "tags": [
+      "b2b",
+      "pipeline"
+    ],
+    "url": "https://example.com/apply/10",
+    "createdAt": "2025-08-05T12:00:00Z"
+  }
+]
