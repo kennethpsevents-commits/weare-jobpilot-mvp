@@ -41,10 +41,7 @@ export default async function Home() {
             <p className="text-sm text-neutral-600">
               {job.company} – {job.location} ({job.work_mode})
             </p>
-            <Link
-              href={`/jobs/${job.slug}`}
-              className="text-green-600 underline mt-2 inline-block"
-            >
+            <Link href={`/jobs/${job.slug}`} className="text-green-600 underline mt-2 inline-block">
               Bekijk vacature →
             </Link>
           </li>
