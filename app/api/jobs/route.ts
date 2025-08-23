@@ -1,19 +1,29 @@
-import nl from "@/data/jobs.nl.json";
-import en from "@/data/jobs.en.json";
+import { NextResponse } from 'next/server';
+import fs from 'node:fs';
+import path from 'node:path';
 
-export const dynamic = "force-dynamic";
+export async function GET(req: Request) {
+  try {
+    const file = path.join(process.cwd(), 'public', 'jobs.json');
+    const raw = fs.readFileSync(file, 'utf-8');
+    const all = JSON.parse(raw) as any[];
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const q = (searchParams.get("query") || "").toLowerCase().trim();
-  const type = searchParams.get("type");
-  const lang = (searchParams.get("lang") || "nl") as "nl"|"en";
+    const { searchParams } = new URL(req.url);
+    const q = (searchParams.get('q') || '').toLowerCase();
+    const mode = searchParams.get('mode');
+    const seniority = searchParams.get('seniority');
 
-  const items = (lang === "en" ? en : nl).filter(j => {
-    const matchesType = !type || type === "all" || j.type === type;
-    const matchesQuery = !q || `${j.title} ${j.company} ${j.branch} ${j.location}`.toLowerCase().includes(q);
-    return matchesType && matchesQuery;
-  }).sort((a,b) => (a.createdAt < b.createdAt ? 1 : -1));
-
-  return Response.json({ items, total: items.length });
+    let data = all;
+    if (mode && mode !== 'all') data = data.filter(j => j.work_mode === mode);
+    if (seniority) data = data.filter(j => j.seniority === seniority);
+    if (q) {
+      data = data.filter(j =>
+        [j.title, j.company, j.location, (j.keywords||[]).join(' '), j.description||'']
+          .join(' ').toLowerCase().includes(q)
+      );
+    }
+    return NextResponse.json({ jobs: data });
+  } catch (e:any) {
+    return NextResponse.json({ error: e.message }, { status: 500 });
+  }
 }
