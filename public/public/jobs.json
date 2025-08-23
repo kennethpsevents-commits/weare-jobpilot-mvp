@@ -1,0 +1,25 @@
+jobs.json
+[
+
+    "slug": "react-frontend-developer-amsterdam",
+    "title": "React Frontend Developer",
+    "company": "JobPilot",
+    "location": "Amsterdam, NL",
+    "work_mode": "hybrid",
+    "seniority": "mid",
+    "keywords": ["react", "typescript", "nextjs"],
+    "description": "Bouw moderne interfaces met Next.js en Tailwind. Samenwerken met design en back-end.",
+    "apply_url": "https://jobs.jobpilot.example/apply/react-frontend"
+  },
+  {
+    "slug": "node-backend-engineer-remote",
+    "title": "Node.js Backend Engineer",
+    "company": "JobPilot",
+    "location": "Remote (EU)",
+    "work_mode": "remote",
+    "seniority": "senior",
+    "keywords": ["node", "api", "postgres"],
+    "description": "Ontwerp en bouw snelle API's. Focus op performance en security.",
+    "apply_url": ""
+  }
+]
