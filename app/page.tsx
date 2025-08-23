@@ -9,7 +9,7 @@ type Job = {
   title: string;
   company: string;
   location: string;
-  work_mode: 'remote' | 'hybrid' | 'onsite';
+  work_mode: 'remote' | 'hybrid' | 'onsite' | string;
   seniority: string;
   keywords?: string[];
   description?: string;
