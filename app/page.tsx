@@ -9,7 +9,7 @@ type Job = {
   title: string;
   company: string;
   location: string;
-  work_mode: 'remote' | 'hybrid' | 'onsite' | string;
+  work_mode: 'remote' | 'hybrid' | 'onsite';
   seniority: string;
   keywords?: string[];
   description?: string;
@@ -36,13 +36,12 @@ export default async function Home() {
 
       <ul className="space-y-4">
         {jobs.map((job) => (
-          <li key={job.slug} className="border p-4 rounded-lg shadow-sm">
-            <h2 className="text-xl font-medium">{job.title}</h2>
-            <p className="text-sm text-neutral-600">
-              {job.company} – {job.location} ({job.work_mode})
-            </p>
-            <Link href={`/jobs/${job.slug}`} className="text-green-600 underline mt-2 inline-block">
-              Bekijk vacature →
+          <li key={job.slug} className="border p-4 rounded-lg hover:bg-neutral-50">
+            <Link href={`/jobs/${job.slug}`}>
+              <h2 className="text-xl font-bold">{job.title}</h2>
+              <p className="text-sm text-neutral-600">
+                {job.company} – {job.location} ({job.work_mode})
+              </p>
             </Link>
           </li>
         ))}
