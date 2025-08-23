@@ -1,6 +1,3 @@
-// app/api/jobs/route.ts
-export const runtime = 'nodejs';
-
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
@@ -9,7 +6,7 @@ export async function GET(req: Request) {
   try {
     const file = path.join(process.cwd(), 'public', 'jobs.json');
     const raw = fs.readFileSync(file, 'utf-8');
-    const all = JSON.parse(raw) as any[];
+    const all = JSON.parse(raw);
 
     const { searchParams } = new URL(req.url);
     const q = (searchParams.get('q') || '').toLowerCase();
@@ -17,10 +14,10 @@ export async function GET(req: Request) {
     const seniority = searchParams.get('seniority');
 
     let data = all;
-    if (mode && mode !== 'all') data = data.filter(j => j.work_mode === mode);
-    if (seniority) data = data.filter(j => j.seniority === seniority);
+    if (mode && mode !== 'all') data = data.filter((j: any) => j.work_mode === mode);
+    if (seniority) data = data.filter((j: any) => j.seniority === seniority);
     if (q) {
-      data = data.filter(j =>
+      data = data.filter((j: any) =>
         [j.title, j.company, j.location, (j.keywords || []).join(' '), j.description || '']
           .join(' ')
           .toLowerCase()
