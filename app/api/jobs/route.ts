@@ -1,6 +1,9 @@
+// app/api/jobs/route.ts
+export const runtime = 'nodejs';
+
 import { NextResponse } from 'next/server';
-import fs from 'node:fs';
-import path from 'node:path';
+import fs from 'fs';
+import path from 'path';
 
 export async function GET(req: Request) {
   try {
@@ -18,12 +21,15 @@ export async function GET(req: Request) {
     if (seniority) data = data.filter(j => j.seniority === seniority);
     if (q) {
       data = data.filter(j =>
-        [j.title, j.company, j.location, (j.keywords||[]).join(' '), j.description||'']
-          .join(' ').toLowerCase().includes(q)
+        [j.title, j.company, j.location, (j.keywords || []).join(' '), j.description || '']
+          .join(' ')
+          .toLowerCase()
+          .includes(q)
       );
     }
+
     return NextResponse.json({ jobs: data });
-  } catch (e:any) {
+  } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }
