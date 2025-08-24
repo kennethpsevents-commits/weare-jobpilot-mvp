@@ -1,12 +1,15 @@
-
-import { monstreFetch } from "../fetcher";
+// lib/adapters/greenhouse.ts
+import { fetchWithTimeout } from "../fetcher";
 
 export async function fetchGreenhouse(company: string) {
   const url = `https://boards-api.greenhouse.io/v1/boards/${company}/jobs`;
-  const res = await monstreFetch(url);
+  const res = await fetchWithTimeout(url);
   if (!res.ok) return [];
+
   const json = await res.json();
-  return (json.jobs || []).map((j: any) => ({
+  const items = Array.isArray(json?.jobs) ? json.jobs : [];
+
+  return items.map((j: any) => ({
     source: "greenhouse",
     source_id: String(j.id),
     company,
