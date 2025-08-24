@@ -1,63 +1,20 @@
-import { NextResponse } from 'next/server';
-import { Client } from 'pg';
+import { NextResponse } from "next/server";
+import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
-export const revalidate = 60; // cache 60s
+export const revalidate = 0;
 
-type Job = {
-  slug: string;
-  title: string;
-  company: string;
-  location: string;
-  work_mode: 'remote' | 'hybrid' | 'onsite';
-  seniority: string;
-  keywords: string[] | null;
-  description: string | null;
-  apply_url: string | null;
-};
-
-export async function GET(req: Request) {
+export async function GET() {
   try {
-    const { searchParams } = new URL(req.url);
-    const q = (searchParams.get('q') || '').toLowerCase();
-    const mode = searchParams.get('mode');
-    const seniority = searchParams.get('seniority');
+    const { data, error } = await supabaseAdmin
+      .from("jobs")
+      .select("*")
+      .order("posted_at", { ascending: false })
+      .limit(50);
 
-    // Verbind met Postgres (Supabase) via je .env(.local) POSTGRES_URL
-    const client = new Client({
-      connectionString: process.env.POSTGRES_URL,
-      ssl: { rejectUnauthorized: false },
-    });
-    await client.connect();
+    if (error) throw error;
 
-    const { rows } = await client.query<Job>(`
-      select slug, title, company, location, work_mode, seniority, keywords, description, apply_url
-      from jobs
-    `);
-
-    await client.end();
-
-    let data = rows;
-
-    if (mode && mode !== 'all') data = data.filter(j => j.work_mode === mode);
-    if (seniority) data = data.filter(j => j.seniority === seniority);
-
-    if (q) {
-      data = data.filter(j =>
-        [
-          j.title,
-          j.company,
-          j.location,
-          (j.keywords || []).join(' '),
-          j.description || '',
-        ]
-          .join(' ')
-          .toLowerCase()
-          .includes(q),
-      );
-    }
-
-    return NextResponse.json({ jobs: data });
+    return NextResponse.json(data || []);
   } catch (e: any) {
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    return NextResponse.json({ error: String(e?.message || e) }, { status: 500 });
   }
 }
