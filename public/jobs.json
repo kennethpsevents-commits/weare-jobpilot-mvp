@@ -1,0 +1,26 @@
+[
+  {
+    "id": "jp-0001",
+    "title": "Frontend Developer",
+    "company": "WeAre JobPilot",
+    "location": "Wrocław, PL",
+    "employment_type": "Full-time",
+    "remote": "Hybrid",
+    "salary": "12k–18k PLN gross",
+    "url": "https://wearejobpilot.com/jobs/frontend-developer",
+    "source": "internal",
+    "posted_at": "2025-08-20"
+  },
+  {
+    "id": "jp-0002",
+    "title": "AI Engineer",
+    "company": "ACME Labs",
+    "location": "Remote (EU)",
+    "employment_type": "Contract",
+    "remote": "Remote",
+    "salary": "€70–€95/h",
+    "url": "https://acme.jobs/apply/ai-engineer",
+    "source": "partner",
+    "posted_at": "2025-08-21"
+  }
+]
