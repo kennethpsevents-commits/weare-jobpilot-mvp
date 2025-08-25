@@ -1,71 +1,86 @@
 "use client";
+
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import JobCard from "@/components/JobCard";
 
-type Suggestion = { id: string; title: string; company: string; type: string; branch: string; location: string; url?: string };
+type Job = {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  remote: boolean;
+  url: string;
+  createdAt: string;
+  source: string;
+};
 
-export default function AIPage() {
+export default function AICareerMatchPage() {
+  const [role, setRole] = useState("");
+  const [skills, setSkills] = useState("");
+  const [location, setLocation] = useState("");
+  const [seniority, setSeniority] = useState("");
   const [loading, setLoading] = useState(false);
-  const [suggestions, setSuggestions] = useState<Suggestion[]|null>(null);
+  const [results, setResults] = useState<Job[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  async function submit(e: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const form = new FormData(e.currentTarget);
-    const payload = Object.fromEntries(form.entries());
-    setLoading(true); setSuggestions(null);
+    setLoading(true);
+    setError(null);
+    setResults(null);
     try {
-      const r = await fetch("/api/ai/intake", { method: "POST", headers: { "Content-Type":"application/json" }, body: JSON.stringify(payload) });
-      const data = await r.json();
-      setSuggestions(data.suggestions);
+      const res = await fetch("/api/ai/match", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ role, skills, location, seniority }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.message || "Kon geen matches ophalen");
+      setResults(data.results || []);
+    } catch (err: any) {
+      setError(err?.message || "Er ging iets mis");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="container py-10">
-      <h1 className="text-3xl font-extrabold mb-2">AI Career Match</h1>
-      <p className="text-gray-600 mb-6">Answer a few questions and we suggest 3 roles that fit.</p>
+    <main className="max-w-4xl mx-auto px-4 py-8">
+      <h1 className="text-2xl font-semibold mb-4">AI Career Match</h1>
+      <p className="text-sm opacity-80 mb-6">
+        Vul je rol, skills en locatie in. Je krijgt 3 snelle suggesties uit live vacatures.
+      </p>
 
-      <form onSubmit={submit} className="card p-6 space-y-3 max-w-2xl">
-        <div>
-          <label className="block text-sm mb-1">Target role</label>
-          <Input name="role" placeholder="e.g., Data Analyst" required />
+      <form onSubmit={onSubmit} className="grid md:grid-cols-2 gap-4 mb-8">
+        <input className="border rounded-xl p-2" placeholder="Rol (bv. Frontend Engineer)"
+               value={role} onChange={e => setRole(e.target.value)} />
+        <input className="border rounded-xl p-2" placeholder="Skills (React, TypeScript, AWS)"
+               value={skills} onChange={e => setSkills(e.target.value)} />
+        <input className="border rounded-xl p-2" placeholder="Locatie (Amsterdam of Remote)"
+               value={location} onChange={e => setLocation(e.target.value)} />
+        <input className="border rounded-xl p-2" placeholder="Senioriteit (junior/mid/senior/lead)"
+               value={seniority} onChange={e => setSeniority(e.target.value)} />
+        <div className="md:col-span-2">
+          <button type="submit" className="border rounded-xl px-4 py-2 hover:shadow-sm transition" disabled={loading}>
+            {loading ? "Bezig…" : "Get suggestions"}
+          </button>
         </div>
-        <div>
-          <label className="block text-sm mb-1">Skills (comma‑separated)</label>
-          <Input name="skills" placeholder="python, sql, tableau" />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div>
-            <label className="block text-sm mb-1">Location</label>
-            <Input name="location" placeholder="Poland, Netherlands, Remote" />
-          </div>
-          <div>
-            <label className="block text-sm mb-1">Seniority</label>
-            <select name="seniority" className="w-full h-9 rounded-md border border-gray-300 px-3 text-sm">
-              <option value="junior">Junior</option>
-              <option value="mid">Mid</option>
-              <option value="senior">Senior</option>
-            </select>
-          </div>
-        </div>
-        <Button variant="primary" disabled={loading}>{loading ? "Matching..." : "Get suggestions"}</Button>
       </form>
 
-      {suggestions && (
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-          {suggestions.map(s => (
-            <div key={s.id} className="card p-6">
-              <h3 className="font-semibold">{s.title}</h3>
-              <p className="text-sm text-gray-600">{s.company}</p>
-              <p className="text-sm text-gray-500 mt-2">{s.branch} · {s.location} · {s.type}</p>
-              {s.url && <a className="btn btn-primary mt-3 inline-flex" href={s.url} target="_blank">Apply</a>}
-            </div>
-          ))}
-        </div>
+      {error && <p className="text-red-600 mb-4">{error}</p>}
+
+      {results && results.length > 0 && (
+        <>
+          <h2 className="text-xl font-semibold mb-4">Jouw 3 matches</h2>
+          <section className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {results.map(job => <JobCard key={job.id} job={job} />)}
+          </section>
+        </>
       )}
-    </div>
+
+      {results && results.length === 0 && !loading && (
+        <p className="opacity-70">Geen matches gevonden. Probeer je zoekwoorden te versimpelen.</p>
+      )}
+    </main>
   );
 }
