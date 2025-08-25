@@ -14,17 +14,13 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
-
       "@/components/*": ["./app/components/*"],
       "@components/*": ["./app/components/*"],
-
       "@/lib/*": ["./app/lib/*"],
       "@lib/*": ["./app/lib/*"],
-
       "@/data/*": ["./data/*"],
       "@data/*": ["./data/*"]
     }
