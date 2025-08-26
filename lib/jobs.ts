@@ -8,23 +8,21 @@ export type Job = {
   createdAt: string;
 };
 
-export function sanitizeJob(x: any) {
-  const need = ["title","company","applyUrl"];
-  for (const k of need) {
-    if (!x?.[k]) {
-      return { ok: false as const, error: `Missing field: ${k}` };
-    }
+export function sanitizeJob(
+  input: any
+): { ok: false; error: string } | { ok: true; job: Job } {
+  const required = ["title", "company", "applyUrl"];
+  for (const field of required) {
+    if (!input?.[field]) return { ok: false, error: `Missing ${field}` };
   }
-
   const job: Job = {
-    id: x.id || (globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2)),
-    title: String(x.title),
-    company: String(x.company),
-    location: x.location ? String(x.location) : undefined,
-    remote: Boolean(x.remote),
-    applyUrl: String(x.applyUrl),
-    createdAt: x.createdAt || new Date().toISOString()
+    id: input.id ?? `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    title: String(input.title),
+    company: String(input.company),
+    location: input.location ? String(input.location) : undefined,
+    remote: Boolean(input.remote),
+    applyUrl: String(input.applyUrl),
+    createdAt: new Date().toISOString()
   };
-
-  return { ok: true as const, job };
+  return { ok: true, job };
 }
