@@ -1,13 +1,9 @@
 "use client";
 
 type Job = {
-  id: string;
-  title: string;
-  company: string;
-  location?: string;
-  remote?: boolean;
-  applyUrl: string;
-  createdAt: string;
+  id: string; title: string; company: string;
+  location?: string; remote?: boolean;
+  applyUrl: string; createdAt: string;
 };
 
 export default function JobCard({ job }: { job: Job }) {
