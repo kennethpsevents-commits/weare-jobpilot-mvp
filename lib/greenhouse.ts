@@ -18,7 +18,6 @@ export async function crawlGreenhouse(boardToken: string): Promise<Job[]> {
     createdAt: j.updated_at ?? null,
   }));
 
-  // naar onze DB pushen
   await fetch("/api/jobs/save", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
