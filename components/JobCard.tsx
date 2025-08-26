@@ -1,4 +1,5 @@
 "use client";
+
 import type { Job } from "@/lib/jobs";
 
 export default function JobCard({ job }: { job: Job }) {
@@ -21,11 +22,12 @@ export default function JobCard({ job }: { job: Job }) {
       <div className="mt-4">
         <a
           className="text-sm underline"
-          href={job.applyUrl}        // 👈 dit was job.url
+          href={job.applyUrl}
           target="_blank"
-          rel="noreferrer"
+          rel="noreferrer noopener"
         >
-          Bekĳk bij werkgever
+          {/* dit was job.url */}
+          Bekijk bij werkgever
         </a>
       </div>
     </article>
