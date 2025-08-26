@@ -1,16 +1,15 @@
 import { NextResponse } from "next/server";
-import { crawlALL } from "@/lib/monstre";
 
-export const revalidate = 0;
+export const runtime = "nodejs";
 
+// Simpele healthcheck zonder externe imports
 export async function GET() {
-  try {
-    const { count } = await crawlALL();
-    return NextResponse.json({ inserted_or_updated: count });
-  } catch (e: any) {
-    return NextResponse.json(
-      { error: String(e?.message || e) },
-      { status: 500 }
-    );
-  }
+  return NextResponse.json(
+    {
+      ok: true,
+      service: "weare-jobpilot-mvp",
+      time: new Date().toISOString(),
+    },
+    { status: 200 }
+  );
 }
