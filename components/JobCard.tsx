@@ -1,35 +1,28 @@
+// components/JobCard.tsx
 "use client";
 
-import type { Job } from "@/lib/jobs";
+type Job = {
+  id: string;
+  title: string;
+  company: string;
+  location?: string;
+  remote: boolean;
+  applyUrl: string;
+  createdAt: string;
+};
 
 export default function JobCard({ job }: { job: Job }) {
   return (
-    <article className="rounded-2xl border p-4 hover:shadow-md transition">
-      <header className="mb-2">
-        <h3 className="font-semibold text-lg">{job.title}</h3>
-        <p className="text-sm opacity-80">{job.company}</p>
-      </header>
-
-      <p className="text-sm opacity-80">
-        {job.location || "Location not specified"}
-        {job.remote ? " • Remote" : ""}
+    <a
+      href={job.applyUrl}
+      className="border rounded-lg p-4 hover:shadow block"
+    >
+      <h2 className="font-semibold">{job.title}</h2>
+      <p className="text-sm text-gray-600">{job.company}</p>
+      <p className="text-sm">{job.location ?? (job.remote ? "Remote" : "n.v.t.")}</p>
+      <p className="text-xs text-gray-500 mt-1">
+        Geplaatst: {new Date(job.createdAt).toLocaleDateString()}
       </p>
-
-      <div className="mt-3 text-xs opacity-70">
-        <span>{job.createdAt ? new Date(job.createdAt).toLocaleDateString() : ""}</span>
-      </div>
-
-      <div className="mt-4">
-        <a
-          className="text-sm underline"
-          href={job.applyUrl}
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          {/* dit was job.url */}
-          Bekijk bij werkgever
-        </a>
-      </div>
-    </article>
+    </a>
   );
 }
