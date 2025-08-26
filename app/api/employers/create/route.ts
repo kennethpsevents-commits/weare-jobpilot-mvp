@@ -26,7 +26,7 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const body = await req.json().catch(() => ({}));
+  const body = await req.json().catch(() => ({} as any));
   if (!body?.title || !body?.company || !body?.applyUrl) {
     return NextResponse.json(
       { message: "title, company en applyUrl verplicht" },
