@@ -12,10 +12,7 @@ type Job = {
 
 export default function JobCard({ job }: { job: Job }) {
   return (
-    <a
-      href={job.applyUrl}
-      className="block border rounded-lg p-4 hover:shadow"
-    >
+    <a href={job.applyUrl} className="block border rounded-lg p-4 hover:shadow">
       <h2 className="font-semibold">{job.title}</h2>
       <p className="text-sm text-gray-600">{job.company}</p>
       <p className="text-sm">
