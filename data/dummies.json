@@ -25,6 +25,69 @@
     "remote": true,
     "applyUrl": "https://example.com/apply/data-analyst",
     "createdAt": "2025-08-03T12:00:00Z"
+  },
+  {
+    "id": "4",
+    "title": "Backend Engineer",
+    "company": "CloudForge",
+    "location": "London, UK",
+    "remote": true,
+    "applyUrl": "https://example.com/apply/backend",
+    "createdAt": "2025-08-04T14:00:00Z"
+  },
+  {
+    "id": "5",
+    "title": "HR Manager",
+    "company": "PeopleFirst",
+    "location": "Paris, FR",
+    "remote": false,
+    "applyUrl": "https://example.com/apply/hr-manager",
+    "createdAt": "2025-08-05T09:00:00Z"
+  },
+  {
+    "id": "6",
+    "title": "UX Designer",
+    "company": "PixelWorks",
+    "location": "Barcelona, ES",
+    "remote": true,
+    "applyUrl": "https://example.com/apply/ux-designer",
+    "createdAt": "2025-08-06T08:00:00Z"
+  },
+  {
+    "id": "7",
+    "title": "Sales Executive",
+    "company": "GlobalTrade",
+    "location": "Brussels, BE",
+    "remote": false,
+    "applyUrl": "https://example.com/apply/sales-exec",
+    "createdAt": "2025-08-07T10:00:00Z"
+  },
+  {
+    "id": "8",
+    "title": "AI Researcher",
+    "company": "NeuroLabs",
+    "location": "Zurich, CH",
+    "remote": true,
+    "applyUrl": "https://example.com/apply/ai-research",
+    "createdAt": "2025-08-08T11:30:00Z"
+  },
+  {
+    "id": "9",
+    "title": "Customer Support Agent",
+    "company": "HelpHub",
+    "location": "Lisbon, PT",
+    "remote": true,
+    "applyUrl": "https://example.com/apply/support",
+    "createdAt": "2025-08-09T09:15:00Z"
+  },
+  {
+    "id": "10",
+    "title": "Project Manager",
+    "company": "BuildRight",
+    "location": "Copenhagen, DK",
+    "remote": false,
+    "applyUrl": "https://example.com/apply/project-mgr",
+    "createdAt": "2025-08-10T13:00:00Z"
   }
-  // ... vul verder aan tot 60 stuks
+  // ... vul verder aan tot en met 60
 ]
