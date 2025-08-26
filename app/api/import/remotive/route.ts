@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { sanitizeJob } from "@/lib/jobs";
+import { sanitizeJob, addJob } from "@/lib/jobs";
 
 type RemotiveItem = {
   title?: string;
@@ -26,15 +26,9 @@ export async function GET() {
       };
       const res = sanitizeJob(mapped);
       if (!res.ok) continue;
-
-      await fetch(`${process.env.NEXT_PUBLIC_BASE_URL ?? ""}/api/jobs`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(res.job),
-      }).catch(() => {});
+      addJob(res.job);
       imported++;
     }
-
     return NextResponse.json({ ok: true, source: "remotive", imported });
   } catch (e: any) {
     return NextResponse.json({ error: e?.message ?? "import error" }, { status: 500 });
