@@ -1,26 +1,22 @@
+// app/api/jobs/route.ts
 import { NextResponse } from "next/server";
-import { Job, sanitizeJob } from "@/lib/jobs";
+import { addJob, listJobs, sanitizeJob } from "@/lib/jobs";
 
-let JOBS: Job[] = [];
+// Optioneel: draai op Node runtime (niet verplicht, wel veilig voor fetch limieten)
+export const runtime = "nodejs";
 
 export async function GET() {
-  return NextResponse.json(JOBS);
+  return NextResponse.json(listJobs(), { status: 200 });
 }
 
 export async function POST(req: Request) {
   try {
-    const data = await req.json();
-    const res = sanitizeJob(data);
-    if (!res.ok) {
-      return NextResponse.json({ message: res.error }, { status: 400 });
-    }
-    JOBS.unshift(res.job);
-    return NextResponse.json(res.job, { status: 201 });
-  } catch (err: any) {
-    return NextResponse.json(
-      { error: err?.message ?? "Server error" },
-      { status: 500 }
-    );
+    const payload = await req.json();
+    const res = sanitizeJob(payload);
+    if (!res.ok) return NextResponse.json({ error: res.error }, { status: 400 });
+    addJob(res.job);
+    return NextResponse.json({ ok: true, job: res.job }, { status: 201 });
+  } catch (e: any) {
+    return NextResponse.json({ error: e?.message ?? "bad request" }, { status: 400 });
   }
 }
-
