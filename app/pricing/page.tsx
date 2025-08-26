@@ -1,24 +1,12 @@
 export default function PricingPage() {
+  const stripe = process.env.NEXT_PUBLIC_STRIPE_LINK || "#";
   return (
-    <main className="max-w-3xl mx-auto px-6 py-10">
-      <h1 className="text-2xl font-bold mb-6">Abonnementen</h1>
-      <div className="grid gap-6 sm:grid-cols-3">
-        <div className="border p-4 rounded-xl">
-          <h2 className="font-semibold mb-2">Free</h2>
-          <p>Zoek vacatures gratis</p>
-          <p className="mt-2 font-bold">€0</p>
-        </div>
-        <div className="border p-4 rounded-xl">
-          <h2 className="font-semibold mb-2">Starter</h2>
-          <p>Extra functies + AI tips</p>
-          <p className="mt-2 font-bold">€10 / maand</p>
-        </div>
-        <div className="border p-4 rounded-xl">
-          <h2 className="font-semibold mb-2">Premium</h2>
-          <p>Full AI buddy assistent + extra tools</p>
-          <p className="mt-2 font-bold">€20 / maand</p>
-        </div>
+    <main className="mx-auto max-w-4xl px-6 py-12">
+      <h1 className="text-3xl font-semibold">Prijzen</h1>
+      <p className="mt-2 text-gray-600">Start gratis. Betaal alleen als je meer bereik en contact wil.</p>
+
+      <div className="mt-8 grid gap-6 md:grid-cols-3">
+        <Plan title="Gratis" price="€0" features={["1 vacature", "3 contacten", "Basis distributie"]} cta="/recruiters/new" />
+        <Plan title="Starter" price="€99/m" features={["3 vacatures", "Onbeperkt contact", "AI-rewrite", "Distributie"]} cta={stripe} />
+        <Plan title="Pro" price="€299/m" features={["10 vacatures", "AI-matching", "Analytics", "Geen succesfee"]} cta={stripe} />
       </div>
-    </main>
-  );
-}
