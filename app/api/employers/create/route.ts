@@ -1,5 +1,14 @@
 import { NextResponse } from "next/server";
-import { type Job, sanitizeJob } from "@/lib/jobs";
+
+type Job = {
+  id: string;
+  title: string;
+  company: string;
+  location?: string;
+  remote?: boolean;
+  applyUrl: string;
+  createdAt: string;
+};
 
 export async function GET() {
   const demo: Job[] = [
@@ -18,9 +27,20 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const body = await req.json().catch(() => ({}));
-  const parsed = sanitizeJob(body);
-  if (!parsed.ok) {
-    return NextResponse.json({ message: parsed.error }, { status: 400 });
+  if (!body?.title || !body?.company || !body?.applyUrl) {
+    return NextResponse.json(
+      { message: "title, company en applyUrl verplicht" },
+      { status: 400 }
+    );
   }
-  return NextResponse.json({ message: "created", job: parsed.job }, { status: 201 });
+  const job: Job = {
+    id: crypto.randomUUID(),
+    title: String(body.title),
+    company: String(body.company),
+    location: body.location ? String(body.location) : undefined,
+    remote: Boolean(body.remote),
+    applyUrl: String(body.applyUrl),
+    createdAt: new Date().toISOString()
+  };
+  return NextResponse.json({ message: "created", job }, { status: 201 });
 }
