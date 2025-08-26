@@ -11,7 +11,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // TODO: opslaan in Supabase of andere DB
+    // TODO: opslaan in Supabase of DB
     return NextResponse.json(
       { message: "Vacature succesvol ontvangen", job: b },
       { status: 201 }
