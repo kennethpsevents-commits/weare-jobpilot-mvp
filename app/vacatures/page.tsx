@@ -31,9 +31,7 @@ export default function VacaturesPage() {
       {jobs && jobs.length === 0 && <p>Geen vacatures.</p>}
       {jobs && jobs.length > 0 && (
         <div className="grid gap-4">
-          {jobs.map((j) => (
-            <JobCard key={j.id} job={j} />
-          ))}
+          {jobs.map((j) => <JobCard key={j.id} job={j} />)}
         </div>
       )}
     </main>
