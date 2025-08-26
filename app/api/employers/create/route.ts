@@ -1,25 +1,26 @@
 import { NextResponse } from "next/server";
+import { type Job, sanitizeJob } from "@/lib/jobs";
+
+export async function GET() {
+  const demo: Job[] = [
+    {
+      id: "demo-1",
+      title: "Frontend Developer",
+      company: "WeAre JobPilot",
+      location: "Remote",
+      remote: true,
+      applyUrl: "https://wearejobpilot.com/apply",
+      createdAt: new Date().toISOString()
+    }
+  ];
+  return NextResponse.json(demo);
+}
 
 export async function POST(req: Request) {
-  try {
-    const b = await req.json();
-
-    if (!b.title || !b.company || !b.applyUrl) {
-      return NextResponse.json(
-        { message: "title, company en applyUrl verplicht" },
-        { status: 400 }
-      );
-    }
-
-    // TODO: opslaan in Supabase of DB
-    return NextResponse.json(
-      { message: "Vacature succesvol ontvangen", job: b },
-      { status: 201 }
-    );
-  } catch (err) {
-    return NextResponse.json(
-      { message: "Server error", error: (err as Error).message },
-      { status: 500 }
-    );
+  const body = await req.json().catch(() => ({}));
+  const parsed = sanitizeJob(body);
+  if (!parsed.ok) {
+    return NextResponse.json({ message: parsed.error }, { status: 400 });
   }
+  return NextResponse.json({ message: "created", job: parsed.job }, { status: 201 });
 }
