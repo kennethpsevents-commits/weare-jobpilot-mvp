@@ -5,17 +5,22 @@ export type Job = {
   location?: string;
   remote?: boolean;
   applyUrl: string;
-  createdAt?: string;
+  createdAt: string;
 };
 
-export function normalizeJob(input: any): Job {
-  return {
-    id: input?.id ?? (globalThis.crypto?.randomUUID?.() ?? String(Date.now())),
-    title: String(input?.title ?? ""),
-    company: String(input?.company ?? ""),
-    location: input?.location ?? undefined,
-    remote: Boolean(input?.remote ?? false),
-    applyUrl: String(input?.applyUrl ?? ""),
-    createdAt: input?.createdAt ?? new Date().toISOString(),
+export function sanitizeJob(data: any):
+  { ok: true; job: Job } | { ok: false; error: string } {
+  for (const k of ["title", "company", "applyUrl"]) {
+    if (!data?.[k]) return { ok: false, error: `Missing field: ${k}` };
+  }
+  const job: Job = {
+    id: data.id || crypto.randomUUID(),
+    title: String(data.title),
+    company: String(data.company),
+    location: data.location ? String(data.location) : undefined,
+    remote: Boolean(data.remote),
+    applyUrl: String(data.applyUrl),
+    createdAt: data.createdAt || new Date().toISOString()
   };
+  return { ok: true, job };
 }
