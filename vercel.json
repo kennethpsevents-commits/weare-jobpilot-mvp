@@ -1,0 +1,6 @@
+{
+  "crons": [
+    { "path": "/api/import/himalayas", "schedule": "0 6 * * *" },
+    { "path": "/api/import/remotive",  "schedule": "0 7 * * *" }
+  ]
+}
