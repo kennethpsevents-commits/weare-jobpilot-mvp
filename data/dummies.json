@@ -1,0 +1,30 @@
+[
+  {
+    "id": "1",
+    "title": "Frontend Developer",
+    "company": "TechNova",
+    "location": "Amsterdam, NL",
+    "remote": true,
+    "applyUrl": "https://example.com/apply/frontend-dev",
+    "createdAt": "2025-08-01T09:00:00Z"
+  },
+  {
+    "id": "2",
+    "title": "Marketing Specialist",
+    "company": "BrightMinds",
+    "location": "Berlin, DE",
+    "remote": false,
+    "applyUrl": "https://example.com/apply/marketing",
+    "createdAt": "2025-08-02T10:30:00Z"
+  },
+  {
+    "id": "3",
+    "title": "Data Analyst",
+    "company": "InnoData",
+    "location": "Warsaw, PL",
+    "remote": true,
+    "applyUrl": "https://example.com/apply/data-analyst",
+    "createdAt": "2025-08-03T12:00:00Z"
+  }
+  // ... vul verder aan tot 60 stuks
+]
