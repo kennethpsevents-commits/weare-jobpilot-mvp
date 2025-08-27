@@ -1,32 +1,53 @@
 import { NextResponse } from "next/server";
 
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+type Job = {
+  id: string;
+  title: string;
+  company: string;
+  location?: string;
+  remote: boolean;
+  applyUrl: string;
+  description?: string;
+  createdAt: string; // ISO string
+};
 
-export async function POST(req: Request) {
-  try {
-    const body = await req.json().catch(() => ({} as any));
-
-    // Voorbeeld: stuur door naar jouw webhook of sla voorlopig niets op
-    // const hook = process.env.NEXT_PUBLIC_EMPLOYERS_WEBHOOK_URL;
-    // if (hook) {
-    //   await fetch(hook, {
-    //     method: "POST",
-    //     headers: { "content-type": "application/json" },
-    //     body: JSON.stringify(body),
-    //   });
-    // }
-
-    return NextResponse.json({ ok: true, received: body }, { status: 200 });
-  } catch (err: any) {
-    return NextResponse.json(
-      { ok: false, error: String(err?.message || err) },
-      { status: 500 }
-    );
-  }
-}
+// Dummy data: je kunt dit later vervangen door echte data/DB
+const jobs: Job[] = [
+  {
+    id: "emp-001",
+    title: "Frontend Developer (Next.js)",
+    company: "WeAre JobPilot",
+    location: "Remote (EU)",
+    remote: true,
+    applyUrl: "https://wearejobpilot.com/apply/frontend",
+    description: "Bouw mee aan snelle, schone RSC-interfaces.",
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "emp-002",
+    title: "Node/TypeScript Engineer",
+    company: "WeAre JobPilot",
+    location: "Wrocław / Hybrid",
+    remote: false,
+    applyUrl: "https://wearejobpilot.com/apply/backend",
+    description: "API’s met performance budget en Zod-validatie.",
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "emp-003",
+    title: "Product Designer (UX/UI)",
+    company: "WeAre JobPilot",
+    location: "Remote (CET)",
+    remote: true,
+    applyUrl: "https://wearejobpilot.com/apply/design",
+    description: "Design systeemcomponenten; a11y en CWV-focus.",
+    createdAt: new Date().toISOString(),
+  },
+];
 
 export async function GET() {
-  return NextResponse.json({ ok: true, service: "employers-create" }, { status: 200 });
+  // Geen cache in Vercel; altijd verse JSON
+  return NextResponse.json(jobs, {
+    headers: { "Cache-Control": "no-store" },
+  });
 }
