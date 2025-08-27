@@ -1,35 +1,56 @@
+// app/api/employers/create/route.ts
 import { NextResponse } from "next/server";
-import { sanitizeJob, Job } from "@/lib/jobs";
 
-export async function GET() {
-  const demo: Job[] = [
-    {
-      id: "demo-1",
-      title: "Frontend Developer",
-      company: "WeAre JobPilot",
-      location: "Remote",
-      remote: true,
-      applyUrl: "https://wearejobpilot.com/apply",
-      createdAt: new Date().toISOString()
-    }
-  ];
-  return NextResponse.json(demo);
-}
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+// heel simpele e-mail check
+const emailOk = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e ?? "");
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const result = sanitizeJob(body);
-    if (!result.ok) {
-      return NextResponse.json({ message: result.error }, { status: 400 });
+    const body = await req.json().catch(() => ({} as any));
+    const {
+      company = "",
+      contactName = "",
+      email = "",
+      jobTitle = "",
+      location = "",
+      type = "",       // Remote | Hybrid | On-site
+      description = "",
+      website = "",    // honeypot (moet leeg zijn)
+    } = body || {};
+
+    // honeypot tegen bots
+    if (website) {
+      return NextResponse.json({ ok: false, reason: "spam" }, { status: 400 });
     }
-    const { job } = result;
-    // TODO: opslaan in database
-    return NextResponse.json({ message: "created", job }, { status: 201 });
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: error?.message ?? "Server error" },
-      { status: 500 }
-    );
-  }
-}
+
+    // minimale validatie
+    if (!company || !emailOk(email) || !jobTitle) {
+      return NextResponse.json(
+        { ok: false, reason: "invalid", fields: { company, email, jobTitle } },
+        { status: 400 }
+      );
+    }
+
+    const payload = {
+      receivedAt: new Date().toISOString(),
+      company,
+      contactName,
+      email,
+      jobTitle,
+      location,
+      type,
+      description,
+    };
+
+    // Optioneel: forward naar webhook (bijv. Slack/Make/Zapier)
+    // Zet in Vercel: EMPLOYERS_WEBHOOK_URL = https://...
+    const hook = process.env.EMPLOYERS_WEBHOOK_URL;
+    if (hook) {
+      try {
+        await fetch(hook, {
+          method: "POST",
+          headers: { "
