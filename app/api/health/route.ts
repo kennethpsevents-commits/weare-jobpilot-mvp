@@ -11,11 +11,11 @@ export async function GET(req: Request) {
     {
       ok: true,
       host,
-      env: process.env.VERCEL_ENV ?? null,              // "production" | "preview"
-      commit: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? null,
+      env: process.env.VERCEL_ENV ?? null,
+      commit: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0,7) ?? null,
       jobsCount: Array.isArray(jobs) ? jobs.length : 0,
       baseUrlSet: Boolean(process.env.NEXT_PUBLIC_BASE_URL),
-      time: new Date().toISOString(),
+      time: new Date().toISOString()
     },
     { status: 200, headers: { "cache-control": "no-store" } }
   );
