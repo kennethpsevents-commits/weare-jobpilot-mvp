@@ -1,49 +1,34 @@
 import { NextResponse } from "next/server";
 
-export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
-const WEBHOOK = process.env.EMPLOYERS_WEBHOOK_URL; // optioneel
-
-type EmployerPayload = {
-  company: string;
-  contactEmail: string;
-  jobTitle: string;
-  jobDesc?: string;
+type Payload = {
+  company?: string;
+  contactName?: string;
+  email?: string;
+  title?: string;
+  description?: string;
 };
 
 export async function POST(req: Request) {
   try {
-    const body = (await req.json().catch(() => ({}))) as Partial<EmployerPayload>;
+    const body = (await req.json()) as Payload;
 
-    const missing: string[] = [];
-    if (!body.company) missing.push("company");
-    if (!body.contactEmail) missing.push("contactEmail");
-    if (!body.jobTitle) missing.push("jobTitle");
-
-    if (missing.length) {
-      return NextResponse.json(
-        { ok: false, error: "missing_fields", fields: missing },
-        { status: 400, headers: { "cache-control": "no-store" } }
-      );
+    if (!body?.email) {
+      return NextResponse.json({ ok: false, error: "email required" }, { status: 400 });
     }
 
-    if (WEBHOOK) {
-      await fetch(WEBHOOK, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ type: "employer.create", payload: body }),
-      });
-    }
+    // Optioneel doorsturen naar een webhook (laat deze 3 regels zo staan of vul je URL in):
+    // const hook = process.env.EMPLOYERS_WEBHOOK_URL;
+    // if (hook) await fetch(hook, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ source: "weare-jobpilot", ...body }) });
 
     return NextResponse.json(
-      { ok: true, received: body },
+      { ok: true, received: body, ts: new Date().toISOString() },
       { status: 200, headers: { "cache-control": "no-store" } }
     );
   } catch {
-    return NextResponse.json(
-      { ok: false, error: "server_error" },
-      { status: 500, headers: { "cache-control": "no-store" } }
-    );
+    return NextResponse.json({ ok: false, error: "invalid JSON" }, { status: 400 });
   }
 }
