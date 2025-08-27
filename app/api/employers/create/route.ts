@@ -1,56 +1,53 @@
 // app/api/employers/create/route.ts
 import { NextResponse } from "next/server";
 
-export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const runtime = "nodejs";
 
-// heel simpele e-mail check
-const emailOk = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e ?? "");
+// Optioneel: zet een webhook URL in Vercel env als je wil doorsturen.
+// EMPLOYERS_WEBHOOK_URL=https://example.com/webhook
+const WEBHOOK = process.env.EMPLOYERS_WEBHOOK_URL;
+
+type EmployerPayload = {
+  company: string;
+  contactEmail: string;
+  jobTitle: string;
+  jobDesc?: string;
+};
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json().catch(() => ({} as any));
-    const {
-      company = "",
-      contactName = "",
-      email = "",
-      jobTitle = "",
-      location = "",
-      type = "",       // Remote | Hybrid | On-site
-      description = "",
-      website = "",    // honeypot (moet leeg zijn)
-    } = body || {};
+    const body = (await req.json().catch(() => ({}))) as Partial<EmployerPayload>;
 
-    // honeypot tegen bots
-    if (website) {
-      return NextResponse.json({ ok: false, reason: "spam" }, { status: 400 });
-    }
+    const missing: string[] = [];
+    if (!body.company) missing.push("company");
+    if (!body.contactEmail) missing.push("contactEmail");
+    if (!body.jobTitle) missing.push("jobTitle");
 
-    // minimale validatie
-    if (!company || !emailOk(email) || !jobTitle) {
+    if (missing.length) {
       return NextResponse.json(
-        { ok: false, reason: "invalid", fields: { company, email, jobTitle } },
-        { status: 400 }
+        { ok: false, error: "missing_fields", fields: missing },
+        { status: 400, headers: { "cache-control": "no-store" } }
       );
     }
 
-    const payload = {
-      receivedAt: new Date().toISOString(),
-      company,
-      contactName,
-      email,
-      jobTitle,
-      location,
-      type,
-      description,
-    };
+    // Optioneel doorsturen naar je webhook
+    if (WEBHOOK) {
+      await fetch(WEBHOOK, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ type: "employer.create", payload: body }),
+      });
+    }
 
-    // Optioneel: forward naar webhook (bijv. Slack/Make/Zapier)
-    // Zet in Vercel: EMPLOYERS_WEBHOOK_URL = https://...
-    const hook = process.env.EMPLOYERS_WEBHOOK_URL;
-    if (hook) {
-      try {
-        await fetch(hook, {
-          method: "POST",
-          headers: { "
+    return NextResponse.json(
+      { ok: true, received: body },
+      { status: 200, headers: { "cache-control": "no-store" } }
+    );
+  } catch (err) {
+    return NextResponse.json(
+      { ok: false, error: "server_error" },
+      { status: 500, headers: { "cache-control": "no-store" } }
+    );
+  }
+}
