@@ -1,32 +1,30 @@
-"use client";
-import { useEffect, useState } from "react";
 import JobCard from "@/components/JobCard";
-import type { Job } from "@/lib/jobs";
 
-export default function VacaturesPage() {
-  const [jobs, setJobs] = useState<Job[] | null>(null);
+async function getJobs(type?: string) {
+  const base = process.env.NEXT_PUBLIC_BASE_URL ?? "";
+  const url = base ? `${base}/api/jobs${type ? `?type=${type}` : ""}` : `/api/jobs${type ? `?type=${type}` : ""}`;
+  const r = await fetch(url, { cache: "no-store" });
+  return r.ok ? (await r.json()) : [];
+}
 
-  useEffect(() => {
-    (async () => {
-      const r = await fetch("/api/jobs", { cache: "no-store" });
-      const d = await r.json();
-      setJobs(Array.isArray(d) ? d : []);
-    })();
-  }, []);
-
+export default async function VacaturesPage({ searchParams }: { searchParams: { type?: string } }) {
+  const jobs = await getJobs(searchParams?.type);
   return (
-    <main className="max-w-5xl mx-auto px-6 py-8 space-y-4">
+    <main className="container py-10 space-y-6">
       <h1 className="text-2xl font-semibold">Vacatures</h1>
-      {!jobs && <p>Laden…</p>}
-      {jobs && jobs.length === 0 && <p>Nog geen vacatures.</p>}
-      {jobs && jobs.length > 0 && (
-        <div className="grid gap-4 md:grid-cols-2">
-          {jobs.map((j) => <JobCard key={j.id} job={j} />)}
+      <div className="flex gap-3">
+        <a href="/vacatures" className="btn btn-outline">Alle</a>
+        <a href="/vacatures?type=Remote" className="btn btn-outline">Remote</a>
+        <a href="/vacatures?type=Hybrid" className="btn btn-outline">Hybrid</a>
+        <a href="/vacatures?type=On-site" className="btn btn-outline">On-site</a>
+      </div>
+      {jobs.length === 0 ? (
+        <p className="text-gray-500">Geen vacatures gevonden.</p>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {jobs.map((j: any) => (<JobCard key={j.slug} job={j} />))}
         </div>
       )}
-      <p className="text-xs text-gray-500 mt-6">
-        Gevuld door externe remote-job feeds (Himalayas/Remotive).
-      </p>
     </main>
   );
 }
