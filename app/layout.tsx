@@ -1,26 +1,27 @@
-import { NextResponse } from "next/server";
-import jobs from "@/data/jobs.json";
+import "./globals.css";
+import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
-export const runtime = "nodejs";
+export const metadata: Metadata = {
+  title: "We Are JobPilot — Find Work Faster",
+  description: "AI-ready job search MVP with clean UX.",
+  robots: { index: true, follow: true },
+  icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
+};
 
-export async function POST(req: Request) {
-  const { target = "", skills = "", location = "", seniority = "" } =
-    await req.json().catch(() => ({}));
-
-  const terms = [target, skills, location, seniority]
-    .join(" ")
-    .toLowerCase()
-    .split(/[,\s]+/)
-    .filter(Boolean);
-
-  const scored = (jobs as any[]).map((j) => {
-    const hay = `${j.title} ${j.company} ${j.location} ${j.description}`.toLowerCase();
-    const score = terms.reduce((acc, t) => acc + (hay.includes(t) ? 1 : 0), 0);
-    return { job: j, score };
-  }).sort((a, b) => b.score - a.score);
-
-  return NextResponse.json(scored.slice(0, 3).map((s) => s.job), {
-    headers: { "cache-control": "no-store" },
-  });
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="nl">
+      <body>
+        <header className="container mx-auto py-4 flex gap-4">
+          <a href="/" className="font-semibold">WeAre_JobPilot</a>
+          <nav className="ml-auto flex gap-3">
+            <a href="/vacatures">Vacatures</a>
+            <a href="/ai">AI Career Match</a>
+            <a href="/employers" className="btn btn-outline">Plaats een vacature</a>
+          </nav>
+        </header>
+        {children}
+      </body>
+    </html>
+  );
 }
