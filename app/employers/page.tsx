@@ -60,4 +60,32 @@ export default function EmployersPage() {
       <form onSubmit={submit} className="grid gap-3">
         <input className="border rounded px-3 py-2" placeholder="Bedrijfsnaam *" value={form.company} onChange={on("company")} required />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <input className="border rounded px-3 py-2" placeholder="Contac
+          <input className="border rounded px-3 py-2" placeholder="Contactpersoon" value={form.contactName} onChange={on("contactName")} />
+          <input className="border rounded px-3 py-2" placeholder="E-mail *" type="email" value={form.email} onChange={on("email")} required />
+        </div>
+
+        <input className="border rounded px-3 py-2" placeholder="Functietitel *" value={form.jobTitle} onChange={on("jobTitle")} required />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <input className="border rounded px-3 py-2" placeholder="Locatie (stad, land)" value={form.location} onChange={on("location")} />
+          <select className="border rounded px-3 py-2" value={form.type} onChange={on("type")}>
+            <option value="">Type</option>
+            <option>Remote</option>
+            <option>Hybrid</option>
+            <option>On-site</option>
+          </select>
+        </div>
+        <textarea className="border rounded px-3 py-2 min-h-[120px]" placeholder="Korte omschrijving"
+          value={form.description} onChange={on("description")} />
+
+        {/* Honeypot: verstopte input die leeg moet blijven */}
+        <input className="hidden" tabIndex={-1} autoComplete="off" value={form.website} onChange={on("website")} placeholder="Laat leeg" />
+
+        <button className="btn btn-primary" disabled={loading}>{loading ? "Verzenden…" : "Verstuur"}</button>
+      </form>
+
+      {status && (
+        <div className={status.ok ? "text-green-600" : "text-red-600"}>{status.msg}</div>
+      )}
+    </main>
+  );
+}
