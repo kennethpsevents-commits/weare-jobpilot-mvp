@@ -1,0 +1,38 @@
+[
+  {
+    "id": "stripe-frontend-intern-amsterdam",
+    "slug": "stripe-frontend-intern-amsterdam",
+    "title": "Frontend Intern",
+    "company": "Stripe",
+    "location": "Amsterdam, NL",
+    "type": "Hybrid",
+    "remote": false,
+    "applyUrl": "https://stripe.com/jobs",
+    "createdAt": "2025-08-20T09:00:00Z",
+    "description": "Werk mee aan UI-componenten in React/TypeScript."
+  },
+  {
+    "id": "booking-backend-engineer-remote",
+    "slug": "booking-backend-engineer-remote",
+    "title": "Backend Engineer",
+    "company": "Booking.com",
+    "location": "Remote (EU)",
+    "type": "Remote",
+    "remote": true,
+    "applyUrl": "https://careers.booking.com/",
+    "createdAt": "2025-08-18T10:30:00Z",
+    "description": "Microservices in Node.js/Java, event-driven architectuur."
+  },
+  {
+    "id": "adidas-data-analyst-warsaw",
+    "slug": "adidas-data-analyst-warsaw",
+    "title": "Data Analyst",
+    "company": "adidas",
+    "location": "Warsaw, PL",
+    "type": "On-site",
+    "remote": false,
+    "applyUrl": "https://careers.adidas-group.com/",
+    "createdAt": "2025-08-15T08:00:00Z",
+    "description": "SQL/Python dashboards, A/B metingen, rapportages."
+  }
+]
