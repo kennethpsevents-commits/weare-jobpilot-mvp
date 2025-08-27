@@ -1,12 +1,9 @@
-// app/api/employers/create/route.ts
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-// Optioneel: zet een webhook URL in Vercel env als je wil doorsturen.
-// EMPLOYERS_WEBHOOK_URL=https://example.com/webhook
-const WEBHOOK = process.env.EMPLOYERS_WEBHOOK_URL;
+const WEBHOOK = process.env.EMPLOYERS_WEBHOOK_URL; // optioneel
 
 type EmployerPayload = {
   company: string;
@@ -31,7 +28,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Optioneel doorsturen naar je webhook
     if (WEBHOOK) {
       await fetch(WEBHOOK, {
         method: "POST",
@@ -44,7 +40,7 @@ export async function POST(req: Request) {
       { ok: true, received: body },
       { status: 200, headers: { "cache-control": "no-store" } }
     );
-  } catch (err) {
+  } catch {
     return NextResponse.json(
       { ok: false, error: "server_error" },
       { status: 500, headers: { "cache-control": "no-store" } }
