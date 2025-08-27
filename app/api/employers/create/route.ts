@@ -4,31 +4,30 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-type Payload = {
-  company?: string;
-  contactName?: string;
-  email?: string;
-  title?: string;
-  description?: string;
-};
-
 export async function POST(req: Request) {
   try {
-    const body = (await req.json()) as Payload;
+    const payload = await req.json().catch(() => ({}));
+    const hook = process.env.NEXT_PUBLIC_BASE_URL
+      ? `${process.env.NEXT_PUBLIC_BASE_URL}/api/health`
+      : "https://example.org/health"; // tijdelijk: voorkomt lege URL
 
-    if (!body?.email) {
-      return NextResponse.json({ ok: false, error: "email required" }, { status: 400 });
-    }
+    // Voorbeeld POST (deze call mag je later aanpassen/weghalen)
+    await fetch(hook, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ping: "ok", payload }),
+    }).catch(() => { /* negeren in MVP */ });
 
-    // Optioneel doorsturen naar een webhook (laat deze 3 regels zo staan of vul je URL in):
-    // const hook = process.env.EMPLOYERS_WEBHOOK_URL;
-    // if (hook) await fetch(hook, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ source: "weare-jobpilot", ...body }) });
-
+    return NextResponse.json({ ok: true });
+  } catch (e: any) {
     return NextResponse.json(
-      { ok: true, received: body, ts: new Date().toISOString() },
-      { status: 200, headers: { "cache-control": "no-store" } }
+      { ok: false, error: String(e?.message || e) },
+      { status: 500 }
     );
-  } catch {
-    return NextResponse.json({ ok: false, error: "invalid JSON" }, { status: 400 });
   }
+}
+
+export async function GET() {
+  // simpele check zodat de route bestaat
+  return NextResponse.json({ ok: true, route: "/api/employers/create" });
 }
