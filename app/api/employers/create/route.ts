@@ -1,22 +1,19 @@
 import { NextResponse } from "next/server";
-
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export async function POST(req: Request) {
   try {
-    const payload = await req.json().catch(() => ({}));
-    const hook = process.env.NEXT_PUBLIC_BASE_URL
-      ? `${process.env.NEXT_PUBLIC_BASE_URL}/api/health`
-      : "https://example.org/health"; // tijdelijk: voorkomt lege URL
+    const body = await req.json().catch(() => ({} as any));
+    const hook = process.env.SLACK_WEBHOOK_URL || "";
 
-    // Voorbeeld POST (deze call mag je later aanpassen/weghalen)
-    await fetch(hook, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ ping: "ok", payload }),
-    }).catch(() => { /* negeren in MVP */ });
+    if (hook) {
+      await fetch(hook, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ type: "new-job", payload: body }),
+      });
+    }
 
     return NextResponse.json({ ok: true });
   } catch (e: any) {
@@ -25,9 +22,4 @@ export async function POST(req: Request) {
       { status: 500 }
     );
   }
-}
-
-export async function GET() {
-  // simpele check zodat de route bestaat
-  return NextResponse.json({ ok: true, route: "/api/employers/create" });
 }
