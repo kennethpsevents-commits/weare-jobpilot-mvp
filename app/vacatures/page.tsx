@@ -20,7 +20,7 @@ export default function VacaturesPage() {
   useEffect(() => {
     (async () => {
       try {
-        // ✅ Nu lezen uit live endpoint
+        // HIER staat nu /api/jobs → dat haalt de echte vacatures binnen
         const r = await fetch("/api/jobs", { cache: "no-store" });
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         const d = await r.json();
