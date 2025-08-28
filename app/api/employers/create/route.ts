@@ -8,11 +8,11 @@ type Job = {
   remote: boolean;
   applyUrl: string;
   description?: string;
-  createdAt: string; // ISO string
+  createdAt: string;
 };
 
-// Dummy data: je kunt dit later vervangen door echte data/DB
-const jobs: Job[] = [
+// In-memory store (reset bij nieuwe deploy)
+let jobs: Job[] = [
   {
     id: "emp-001",
     title: "Frontend Developer (Next.js)",
@@ -23,31 +23,22 @@ const jobs: Job[] = [
     description: "Bouw mee aan snelle, schone RSC-interfaces.",
     createdAt: new Date().toISOString(),
   },
-  {
-    id: "emp-002",
-    title: "Node/TypeScript Engineer",
-    company: "WeAre JobPilot",
-    location: "Wrocław / Hybrid",
-    remote: false,
-    applyUrl: "https://wearejobpilot.com/apply/backend",
-    description: "API’s met performance budget en Zod-validatie.",
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "emp-003",
-    title: "Product Designer (UX/UI)",
-    company: "WeAre JobPilot",
-    location: "Remote (CET)",
-    remote: true,
-    applyUrl: "https://wearejobpilot.com/apply/design",
-    description: "Design systeemcomponenten; a11y en CWV-focus.",
-    createdAt: new Date().toISOString(),
-  },
 ];
 
 export async function GET() {
-  // Geen cache in Vercel; altijd verse JSON
-  return NextResponse.json(jobs, {
-    headers: { "Cache-Control": "no-store" },
-  });
+  return NextResponse.json(jobs, { headers: { "Cache-Control": "no-store" } });
+}
+
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
+    const job: Job = {
+      id: "emp-" + (jobs.length + 1).toString().padStart(3, "0"),
+      ...body,
+    };
+    jobs.unshift(job);
+    return NextResponse.json(job, { status: 201 });
+  } catch {
+    return NextResponse.json({ error: "Invalid data" }, { status: 400 });
+  }
 }
