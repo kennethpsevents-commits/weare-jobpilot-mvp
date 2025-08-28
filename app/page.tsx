@@ -1,5 +1,4 @@
 "use client";
-
 import Link from "next/link";
 
 export default function HomePage() {
@@ -9,7 +8,6 @@ export default function HomePage() {
       <p className="text-lg text-neutral-700">
         Het platform waar werkgevers en talent elkaar vinden.
       </p>
-
       <p className="mt-6">
         <Link href="/vacatures" className="underline text-blue-600">
           Bekijk vacatures
