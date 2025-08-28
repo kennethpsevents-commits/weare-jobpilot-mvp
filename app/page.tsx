@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import JobCard from "@/components/JobCard";
 
 async function getJobs() {
