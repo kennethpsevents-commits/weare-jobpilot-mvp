@@ -1,49 +1,121 @@
 "use client";
-import { useState } from "react";
-import JobCard from "@/components/JobCard";
+import { useEffect, useRef, useState } from "react";
 
-export default function AICareerMatch() {
-  const [loading, setLoading] = useState(false);
-  const [jobs, setJobs] = useState<any[]>([]);
-  const [form, setForm] = useState({ target: "", skills: "", location: "", seniority: "Junior" });
+type Msg = { role: "user" | "assistant"; content: string };
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    setJobs([]);
-    const r = await fetch("/api/ai/match", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(form),
-      cache: "no-store"
+export default function AICoachPage() {
+  const [input, setInput] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [chat, setChat] = useState<Msg[]>([
+    {
+      role: "assistant",
+      content:
+        "Hey! Ik ben je JobPilot-coach. Waar wil je mee starten: cv, motivatie, of passende vacatures?",
+    },
+  ]);
+  const scroller = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    scroller.current?.scrollTo({
+      top: scroller.current.scrollHeight,
+      behavior: "smooth",
     });
-    const d = r.ok ? await r.json() : [];
-    setJobs(d);
-    setLoading(false);
+  }, [chat]);
+
+  async function send() {
+    const text = input.trim();
+    if (!text || busy) return;
+
+    const nextChat: Msg[] = [...chat, { role: "user", content: text }];
+    setChat(nextChat);
+    setInput("");
+    setBusy(true);
+
+    try {
+      const r = await fetch("/api/coach", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ history: nextChat }),
+      });
+
+      const d = await r.json();
+      if (!r.ok) throw new Error(d?.error || "AI fout");
+
+      const reply: string =
+        (d && typeof d.reply === "string" && d.reply.trim()) ||
+        "Ik ben er. Wat heb je nu nodig?";
+
+      setChat((c) => [...c, { role: "assistant", content: reply }]);
+    } catch {
+      setChat((c) => [
+        ...c,
+        {
+          role: "assistant",
+          content:
+            "Er ging iets mis aan mijn kant. Probeer zo nog eens of verwoord je vraag korter.",
+        },
+      ]);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function onKey(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      send();
+    }
   }
 
   return (
-    <main className="container py-10 space-y-6">
-      <h1 className="text-2xl font-semibold">AI Career Match</h1>
-      <form onSubmit={onSubmit} className="grid gap-3 max-w-xl">
-        <input className="border rounded px-3 py-2" placeholder="Target role" value={form.target}
-          onChange={e => setForm({ ...form, target: e.target.value })}/>
-        <input className="border rounded px-3 py-2" placeholder="Skills (comma-separated)" value={form.skills}
-          onChange={e => setForm({ ...form, skills: e.target.value })}/>
-        <input className="border rounded px-3 py-2" placeholder="Location" value={form.location}
-          onChange={e => setForm({ ...form, location: e.target.value })}/>
-        <select className="border rounded px-3 py-2" value={form.seniority}
-          onChange={e => setForm({ ...form, seniority: e.target.value })}>
-          <option>Junior</option><option>Mid</option><option>Senior</option>
-        </select>
-        <button className="btn btn-primary" disabled={loading}>{loading ? "Zoeken…" : "Get suggestions"}</button>
-      </form>
+    <main className="max-w-2xl mx-auto px-4 py-6">
+      <h1 className="text-2xl font-semibold mb-3">AI Coach</h1>
 
-      {jobs.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {jobs.map(j => <JobCard key={j.slug} job={j} />)}
-        </div>
-      )}
+      <div
+        ref={scroller}
+        className="h-[60vh] overflow-y-auto rounded-2xl border p-3 bg-white"
+        aria-live="polite"
+      >
+        {chat.map((m, i) => (
+          <div
+            key={i}
+            className={`mb-2 flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
+          >
+            <div
+              className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm ${
+                m.role === "user"
+                  ? "bg-blue-600 text-white"
+                  : "bg-neutral-100 text-neutral-900"
+              }`}
+            >
+              {m.content}
+            </div>
+          </div>
+        ))}
+        {busy && (
+          <div className="text-xs text-neutral-500 italic">
+            Coach is aan het typen…
+          </div>
+        )}
+      </div>
+
+      <div className="mt-3 flex gap-2">
+        <input
+          className="flex-1 rounded-xl border px-3 py-2"
+          placeholder="Stel je vraag (bijv. ‘Help mijn cv voor remote roles’)"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={onKey}
+          aria-label="Bericht aan de coach"
+        />
+        <button
+          onClick={send}
+          disabled={busy}
+          className="rounded-xl bg-blue-600 text-white px-4 py-2 hover:bg-blue-700 disabled:opacity-50"
+        >
+          Verstuur
+        </button>
+      </div>
     </main>
   );
 }
