@@ -20,6 +20,11 @@ export default function HomePage() {
             Vacature plaatsen (recruiter)
           </Link>
         </p>
+        <p>
+          <Link href="/ai" className="underline text-blue-600">
+            Praat met de AI-Coach
+          </Link>
+        </p>
       </div>
     </main>
   );
