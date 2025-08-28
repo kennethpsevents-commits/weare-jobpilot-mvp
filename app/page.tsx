@@ -8,11 +8,19 @@ export default function HomePage() {
       <p className="text-lg text-neutral-700">
         Het platform waar werkgevers en talent elkaar vinden.
       </p>
-      <p className="mt-6">
-        <Link href="/vacatures" className="underline text-blue-600">
-          Bekijk vacatures
-        </Link>
-      </p>
+
+      <div className="mt-6 space-y-2">
+        <p>
+          <Link href="/vacatures" className="underline text-blue-600">
+            Bekijk vacatures
+          </Link>
+        </p>
+        <p>
+          <Link href="/employer" className="underline text-blue-600">
+            Vacature plaatsen (recruiter)
+          </Link>
+        </p>
+      </div>
     </main>
   );
 }
