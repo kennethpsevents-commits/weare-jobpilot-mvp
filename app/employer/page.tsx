@@ -17,7 +17,6 @@ export default function EmployerPage() {
       description: (form.description as any).value,
       createdAt: new Date().toISOString(),
     };
-
     try {
       const res = await fetch("/api/employers/create", {
         method: "POST",
@@ -36,47 +35,15 @@ export default function EmployerPage() {
     <main className="max-w-xl mx-auto px-6 py-8">
       <h1 className="text-2xl font-semibold mb-4">Plaats een vacature</h1>
       <form onSubmit={handleSubmit} className="grid gap-4">
-        <input
-          name="title"
-          placeholder="Functietitel"
-          required
-          className="border p-2 rounded"
-        />
-        <input
-          name="company"
-          placeholder="Bedrijfsnaam"
-          required
-          className="border p-2 rounded"
-        />
-        <input
-          name="location"
-          placeholder="Locatie"
-          className="border p-2 rounded"
-        />
-        <label className="flex items-center gap-2">
-          <input type="checkbox" name="remote" /> Remote
-        </label>
-        <input
-          name="applyUrl"
-          placeholder="Sollicitatielink"
-          required
-          className="border p-2 rounded"
-        />
-        <textarea
-          name="description"
-          placeholder="Beschrijving"
-          rows={4}
-          className="border p-2 rounded"
-        />
-        <button
-          type="submit"
-          className="rounded-xl bg-blue-600 text-white px-4 py-2 hover:bg-blue-700"
-        >
-          Opslaan
-        </button>
+        <input name="title" placeholder="Functietitel" required className="border p-2 rounded" />
+        <input name="company" placeholder="Bedrijfsnaam" required className="border p-2 rounded" />
+        <input name="location" placeholder="Locatie" className="border p-2 rounded" />
+        <label className="flex items-center gap-2"><input type="checkbox" name="remote" /> Remote</label>
+        <input name="applyUrl" placeholder="Sollicitatielink" required className="border p-2 rounded" />
+        <textarea name="description" placeholder="Beschrijving" rows={4} className="border p-2 rounded" />
+        <button type="submit" className="rounded-xl bg-blue-600 text-white px-4 py-2 hover:bg-blue-700">Opslaan</button>
       </form>
       {status && <p className="mt-4">{status}</p>}
     </main>
   );
 }
-
