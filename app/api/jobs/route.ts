@@ -1,18 +1,22 @@
 import { NextResponse } from "next/server";
-import jobs from "@/data/jobs.json";
+import { fetchGreenhouseBoard, mapToCommonJobs } from "@/lib/greenhouse";
+import boards from "@/data/greenhouse.json";
 
-export const dynamic = "force-dynamic";
-export const runtime = "nodejs";
-
-export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const type = searchParams.get("type");
-  let out = Array.isArray(jobs) ? [...(jobs as any[])] : [];
-  if (type && ["Remote", "Hybrid", "On-site"].includes(type)) {
-    out = out.filter((j: any) => j.type === type);
+export async function GET() {
+  try {
+    const list = Array.isArray((boards as any)?.boards) ? (boards as any).boards : [];
+    const chunks = await Promise.all(
+      list.map(async (b: string) => mapToCommonJobs(b, await fetchGreenhouseBoard(b)))
+    );
+    const flat = chunks.flat();
+    return NextResponse.json(flat, {
+      headers: {
+        "Cache-Control": "no-store",
+        "CDN-Cache-Control": "no-store",
+        "Vercel-CDN-Cache-Control": "no-store"
+      }
+    });
+  } catch {
+    return NextResponse.json([], { headers: { "Cache-Control": "no-store" } });
   }
-  out.sort((a: any, b: any) =>
-    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-  return NextResponse.json(out, { headers: { "cache-control": "no-store" } });
 }
