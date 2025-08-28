@@ -20,7 +20,8 @@ export default function VacaturesPage() {
   useEffect(() => {
     (async () => {
       try {
-        const r = await fetch("/api/employers/create", { cache: "no-store" });
+        // ✅ Nu lezen uit live endpoint
+        const r = await fetch("/api/jobs", { cache: "no-store" });
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         const d = await r.json();
         setJobs(Array.isArray(d) ? d : []);
