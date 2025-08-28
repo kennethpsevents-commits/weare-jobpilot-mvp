@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { fetchGreenhouseBoard, mapToCommonJobs } from "@/lib/greenhouse";
 import boards from "@/data/greenhouse.json";
 
+export const runtime = "nodejs";
+
 export async function GET() {
   try {
     const list = Array.isArray((boards as any)?.boards) ? (boards as any).boards : [];
