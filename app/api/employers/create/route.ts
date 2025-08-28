@@ -11,7 +11,6 @@ type Job = {
   createdAt: string;
 };
 
-// In-memory store (reset bij nieuwe deploy)
 let jobs: Job[] = [
   {
     id: "emp-001",
