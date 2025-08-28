@@ -20,7 +20,6 @@ export default function VacaturesPage() {
   useEffect(() => {
     (async () => {
       try {
-        // HIER staat nu /api/jobs → dat haalt de echte vacatures binnen
         const r = await fetch("/api/jobs", { cache: "no-store" });
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         const d = await r.json();
@@ -40,9 +39,7 @@ export default function VacaturesPage() {
       {jobs && jobs.length === 0 && <p>Geen vacatures gevonden.</p>}
       {jobs && jobs.length > 0 && (
         <section className="grid gap-4 sm:grid-cols-2">
-          {jobs.map((j) => (
-            <JobCard key={j.id} job={j} />
-          ))}
+          {jobs.map((j) => (<JobCard key={j.id} job={j} />))}
         </section>
       )}
     </main>
