@@ -1,28 +1,45 @@
 "use client";
-import Link from "next/link";
 
 type Job = {
-  slug: string;
+  id: string;
   title: string;
   company: string;
   location?: string;
-  type?: "Remote" | "Hybrid" | "On-site";
+  remote: boolean;
   applyUrl: string;
+  description?: string;
   createdAt: string;
 };
 
-export default function JobCard({ job }: { job: Job }) {
+export function JobCard({ job }: { job: Job }) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm flex flex-col gap-2">
-      <div className="text-sm text-gray-500">{job.company} • {job.type ?? "—"}</div>
-      <Link href={`/jobs/${job.slug}`} className="text-lg font-semibold hover:underline">
-        {job.title}
-      </Link>
-      <div className="text-sm text-gray-600">{job.location ?? "—"}</div>
-      <div className="mt-3 flex gap-2">
-        <Link href={`/jobs/${job.slug}`} className="btn btn-outline text-sm px-3 py-1">Details</Link>
-        <a href={job.applyUrl} target="_blank" rel="noreferrer" className="btn btn-primary text-sm px-3 py-1">Solliciteer</a>
-      </div>
-    </div>
+    <article className="rounded-2xl border p-4 shadow-sm hover:shadow-md transition">
+      <header className="flex items-start justify-between gap-3">
+        <div>
+          <h3 className="text-lg font-semibold">{job.title}</h3>
+          <p className="text-sm text-neutral-600">{job.company}</p>
+        </div>
+        <span className="text-xs rounded-full border px-2 py-0.5">
+          {job.remote ? "Remote" : "On-site"}
+        </span>
+      </header>
+      {job.location && (
+        <p className="mt-1 text-sm text-neutral-700">{job.location}</p>
+      )}
+      {job.description && (
+        <p className="mt-3 text-sm text-neutral-800 line-clamp-3">
+          {job.description}
+        </p>
+      )}
+      <footer className="mt-4">
+        <a
+          className="inline-block rounded-xl border px-3 py-1 text-sm hover:bg-neutral-50"
+          href={job.applyUrl}
+        >
+          Apply
+        </a>
+      </footer>
+    </article>
   );
 }
+export default JobCard;
