@@ -41,7 +41,7 @@ export default function Page() {
               <div className="text-sm opacity-70">
                 {j.company} • {j.location ?? "—"} {j.remote ? "• Remote" : ""}
               </div>
-              <a className="underline text-blue-600" href={j.applyUrl} target="_blank">Apply</a>
+              <a className="underline" href={j.applyUrl} target="_blank">Apply</a>
             </li>
           ))}
         </ul>
