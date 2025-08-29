@@ -1,4 +1,3 @@
-// app/greenhouse-test/page.tsx
 "use client";
 import { useEffect, useState } from "react";
 
@@ -42,7 +41,7 @@ export default function Page() {
               <div className="text-sm opacity-70">
                 {j.company} • {j.location ?? "—"} {j.remote ? "• Remote" : ""}
               </div>
-              <a className="text-blue-600 underline" href={j.applyUrl} target="_blank">Apply</a>
+              <a className="underline text-blue-600" href={j.applyUrl} target="_blank">Apply</a>
             </li>
           ))}
         </ul>
