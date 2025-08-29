@@ -1,46 +1,31 @@
-"use client";
-import { useEffect, useState } from "react";
-import JobCard from "@/components/JobCard";
+import { fetchJobsFromAllBoards } from "@/lib/getJobs";
+import type { Job } from "@/lib/types";
 
-type Job = {
-  id: string;
-  title: string;
-  company: string;
-  location?: string;
-  remote: boolean;
-  applyUrl: string;
-  description?: string;
-  createdAt: string;
-};
+export const revalidate = 0;
 
-export default function VacaturesPage() {
-  const [jobs, setJobs] = useState<Job[] | null>(null);
-  const [err, setErr] = useState<string | null>(null);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const r = await fetch("/api/jobs", { cache: "no-store" });
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        const d = await r.json();
-        setJobs(Array.isArray(d) ? d : []);
-      } catch (e: any) {
-        setErr(e?.message ?? "Kon niet laden");
-        setJobs([]);
-      }
-    })();
-  }, []);
+export default async function Vacatures() {
+  const jobs = await fetchJobsFromAllBoards();
 
   return (
-    <main className="max-w-5xl mx-auto px-6 py-8">
-      <h1 className="text-2xl font-semibold mb-2">Vacatures</h1>
-      {!jobs && !err && <p>Laden…</p>}
-      {err && <p className="text-red-600">Fout: {err}</p>}
-      {jobs && jobs.length === 0 && <p>Geen vacatures gevonden.</p>}
-      {jobs && jobs.length > 0 && (
-        <section className="grid gap-4 sm:grid-cols-2">
-          {jobs.map((j) => (<JobCard key={j.id} job={j} />))}
-        </section>
+    <main className="max-w-5xl mx-auto p-6 space-y-4">
+      <h1 className="text-2xl font-semibold">Vacatures</h1>
+
+      {jobs.length === 0 ? (
+        <p className="opacity-70">Geen vacatures gevonden.</p>
+      ) : (
+        <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {jobs.map((j: Job) => (
+            <li key={`${j.id}-${j.applyUrl}`} className="rounded-2xl border p-4 hover:shadow-sm transition">
+              <div className="font-medium">{j.title}</div>
+              <div className="text-sm opacity-70">
+                {j.company} {j.location ? `• ${j.location}` : ""} {j.remote ? "• Remote" : ""}
+              </div>
+              <a className="underline mt-2 inline-block" href={j.applyUrl} target="_blank" rel="noreferrer">
+                Apply
+              </a>
+            </li>
+          ))}
+        </ul>
       )}
     </main>
   );
