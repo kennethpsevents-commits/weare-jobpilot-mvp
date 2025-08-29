@@ -1,6 +1,4 @@
 {
-  "name": "weare-jobpilot-mvp",
-  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -9,17 +7,18 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.39.3",
-    "next": "13.4.19",
+    "next": "14.2.5",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },
   "devDependencies": {
-    "autoprefixer": "^10.4.15",
-    "postcss": "^8.4.31",
-    "tailwindcss": "^3.3.3",
-    "typescript": "^5.1.6",
-    "eslint": "8.47.0",
-    "eslint-config-next": "13.4.19"
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.45",
+    "tailwindcss": "^3.4.10",
+    "eslint": "^8.57.0",
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=18.x"
   }
 }
