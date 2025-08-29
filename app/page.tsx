@@ -1,17 +1,45 @@
-"use client";
-import Link from "next/link";
+import "./globals.css";
+import { fetchJobsFromAllBoards } from "@/lib/getJobs";
+import type { Job } from "@/lib/types";
 
-export default function HomePage() {
+export const revalidate = 0;
+
+function JobCard({ job }: { job: Job }) {
   return (
-    <main className="max-w-3xl mx-auto px-6 py-12">
-      <h1 className="text-3xl font-bold mb-4">Welkom bij JobPilot</h1>
-      <p className="text-lg text-neutral-700">Het platform waar werkgevers en talent elkaar vinden.</p>
-      <div className="mt-6 space-y-2">
-        <p><Link href="/vacatures" className="underline text-blue-600">Bekijk vacatures</Link></p>
-        <p><Link href="/employer" className="underline text-blue-600">Vacature plaatsen (recruiter)</Link></p>
-        <p><Link href="/ai" className="underline text-blue-600">Praat met de AI-Coach</Link></p>
-        <p><Link href="/test" className="underline text-blue-600">Test Coach API</Link></p>
+    <li className="rounded-2xl border p-4 hover:shadow-sm transition">
+      <div className="font-semibold">{job.title}</div>
+      <div className="text-sm opacity-70">
+        {job.company} {job.location ? `• ${job.location}` : ""} {job.remote ? "• Remote" : ""}
       </div>
+      <a className="underline mt-2 inline-block" href={job.applyUrl} target="_blank" rel="noreferrer">
+        Apply
+      </a>
+    </li>
+  );
+}
+
+export default async function Page() {
+  const jobs = await fetchJobsFromAllBoards();
+
+  return (
+    <main className="max-w-5xl mx-auto p-6 space-y-6">
+      <header className="space-y-2">
+        <h1 className="text-3xl font-bold">WeAre JobPilot</h1>
+        <p className="opacity-80">Live vacatures verzameld via Greenhouse boards.</p>
+      </header>
+
+      {!jobs.length ? (
+        <p className="opacity-70">Geen vacatures gevonden. Probeer later opnieuw.</p>
+      ) : (
+        <>
+          <div className="text-sm opacity-70">{jobs.length} vacatures gevonden</div>
+          <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {jobs.map((j) => (
+              <JobCard key={`${j.id}-${j.applyUrl}`} job={j} />
+            ))}
+          </ul>
+        </>
+      )}
     </main>
   );
 }
