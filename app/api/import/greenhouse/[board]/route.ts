@@ -1,23 +1,7 @@
 import { NextResponse } from "next/server";
 
-// Standalone route: geen afhankelijkheid van "@/lib/greenhouse".
-type GHJob = {
-  id: number;
-  title: string;
-  absolute_url: string;
-  location?: { name?: string };
-  updated_at?: string;
-};
-
-type JPJob = {
-  id: string;
-  title: string;
-  company: string;
-  location?: string;
-  remote: boolean;
-  applyUrl: string;
-  createdAt: string;
-};
+type GHJob = { id: number; title: string; absolute_url: string; location?: { name?: string }; updated_at?: string; };
+type JPJob = { id: string; title: string; company: string; location?: string; remote: boolean; applyUrl: string; createdAt: string; };
 
 async function fetchBoardJobs(board: string): Promise<GHJob[]> {
   const url = `https://boards-api.greenhouse.io/v1/boards/${encodeURIComponent(board)}/jobs`;
@@ -35,7 +19,7 @@ function mapJobs(board: string, jobs: GHJob[]): JPJob[] {
     location: j.location?.name ?? undefined,
     remote: (j.location?.name ?? "").toLowerCase().includes("remote"),
     applyUrl: j.absolute_url,
-    createdAt: j.updated_at ?? new Date().toISOString()
+    createdAt: j.updated_at ?? new Date().toISOString(),
   }));
 }
 
