@@ -1,24 +1,24 @@
+// app/api/import/greenhouse/[board]/route.ts
 import { NextResponse } from "next/server";
-import { importGreenhouseBoard, listGreenhouseMapped } from "@/lib/greenhouse";
+import { importGreenhouseBoard } from "@/lib/greenhouse";
 
-// GET /api/import/greenhouse/[board]?dry=1  -> alleen MAP (geen opslag)
-// GET /api/import/greenhouse/[board]        -> IMPORT (opslaan in /api/jobs)
-export async function GET(req: Request, ctx: { params: { board: string } }) {
-  const board = ctx.params.board;
-  const url = new URL(req.url);
-  const isDry = url.searchParams.has("dry") || url.searchParams.get("mode") === "map";
+export const revalidate = 0; // altijd vers bij handmatig triggeren
 
+export async function GET(
+  _req: Request,
+  ctx: { params: { board: string } }
+) {
   try {
-    if (isDry) {
-      const preview = await listGreenhouseMapped(board, 20);
-      return NextResponse.json({ ok: true, mode: "dry", board, count: preview.length, preview });
+    const board = ctx?.params?.board;
+    if (!board) {
+      return NextResponse.json({ error: "Missing board" }, { status: 400 });
     }
-
-    // absolute base naar dezelfde host (geen ENV nodig)
-    const origin = new URL(req.url).origin;
-    const res = await importGreenhouseBoard(board, origin);
-    return NextResponse.json(res);
-  } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e?.message ?? "import error", board }, { status: 500 });
+    const data = await importGreenhouseBoard(board);
+    return NextResponse.json(data, { status: 200 });
+  } catch (err: any) {
+    return NextResponse.json(
+      { error: err?.message ?? "Unknown error" },
+      { status: 500 }
+    );
   }
 }
