@@ -2,5 +2,4 @@
 @tailwind components;
 @tailwind utilities;
 
-/* optional */
-:root { color-scheme: light; }
+/* jouw globale styles hieronder … */
