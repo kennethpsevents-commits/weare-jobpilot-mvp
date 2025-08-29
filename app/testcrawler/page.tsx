@@ -3,8 +3,7 @@ import { useEffect, useState } from "react";
 import { crawlGreenhouse } from "@/lib/greenhouse";
 
 export default function TestCrawlerPage() {
-  const [status, setStatus] = useState<string>("");
-
+  const [status, setStatus] = useState("Starting…");
   useEffect(() => {
     (async () => {
       try {
@@ -16,7 +15,6 @@ export default function TestCrawlerPage() {
       }
     })();
   }, []);
-
   return (
     <main className="max-w-xl mx-auto p-6">
       <h1 className="text-2xl font-semibold">Crawler test</h1>
