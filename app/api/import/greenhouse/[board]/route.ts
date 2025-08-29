@@ -35,7 +35,7 @@ function mapJobs(board: string, jobs: GHJob[]): JPJob[] {
     location: j.location?.name ?? undefined,
     remote: (j.location?.name ?? "").toLowerCase().includes("remote"),
     applyUrl: j.absolute_url,
-    createdAt: j.updated_at ?? new Date().toISOString(),
+    createdAt: j.updated_at ?? new Date().toISOString()
   }));
 }
 
@@ -43,4 +43,12 @@ export const revalidate = 0;
 
 export async function GET(_req: Request, ctx: { params: { board: string } }) {
   try {
-    const board = ctx?.params?.boar
+    const board = ctx?.params?.board;
+    if (!board) return NextResponse.json({ error: "Missing board" }, { status: 400 });
+    const gh = await fetchBoardJobs(board);
+    const data = mapJobs(board, gh);
+    return NextResponse.json(data, { status: 200 });
+  } catch (err: any) {
+    return NextResponse.json({ error: err?.message ?? "Unknown error" }, { status: 500 });
+  }
+}
