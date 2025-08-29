@@ -1,4 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* jouw extra styles hieronder */
+
+/* Custom styles */
+body {
+  @apply bg-white text-gray-900;
+}
