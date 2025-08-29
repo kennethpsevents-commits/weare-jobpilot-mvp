@@ -1,4 +1,6 @@
 // lib/greenhouse.ts
+// Failsafe: named + default exports en alias voor een oude typo.
+
 export type GHJob = {
   id: number;
   title: string;
@@ -36,12 +38,4 @@ export async function listGreenhouseMapped(board: string): Promise<JPJob[]> {
     title: j.title ?? "Untitled",
     company: board,
     location: j.location?.name ?? undefined,
-    remote: (j.location?.name ?? "").toLowerCase().includes("remote"),
-    applyUrl: j.absolute_url,
-    createdAt: j.updated_at ?? new Date().toISOString(),
-  }));
-}
-
-export async function importGreenhouseBoard(board: string): Promise<JPJob[]> {
-  return listGreenhouseMapped(board);
-}
+    remote:
