@@ -1,3 +1,4 @@
+// lib/greenhouse.ts
 export type GHJob = {
   id: number;
   title: string;
