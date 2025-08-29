@@ -1,5 +1,5 @@
 // lib/greenhouse.ts
-// Failsafe: named + default exports en alias voor een oude typo.
+// Failsafe: named + default exports en alias voor oude typo.
 
 export type GHJob = {
   id: number;
@@ -38,4 +38,19 @@ export async function listGreenhouseMapped(board: string): Promise<JPJob[]> {
     title: j.title ?? "Untitled",
     company: board,
     location: j.location?.name ?? undefined,
-    remote: (
+    remote: (j.location?.name ?? "").toLowerCase().includes("remote"),
+    applyUrl: j.absolute_url,
+    createdAt: j.updated_at ?? new Date().toISOString()
+  }));
+}
+
+export async function importGreenhouseBoard(board: string): Promise<JPJob[]> {
+  return listGreenhouseMapped(board);
+}
+
+// Alias voor eerdere typefout die mogelijk nog ergens gebruikt wordt:
+export { crawlGreenhouse as crawIGreenhouse };
+
+// Default export object (laat namespace/default imports ook werken)
+const greenhouse = { crawlGreenhouse, listGreenhouseMapped, importGreenhouseBoard };
+export default greenhouse;
