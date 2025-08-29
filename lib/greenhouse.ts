@@ -38,4 +38,4 @@ export async function listGreenhouseMapped(board: string): Promise<JPJob[]> {
     title: j.title ?? "Untitled",
     company: board,
     location: j.location?.name ?? undefined,
-    remote:
+    remote: (
