@@ -1,6 +1,3 @@
-// lib/greenhouse.ts
-// Minimale, werkende helpers voor Greenhouse boards.
-
 export type GHJob = {
   id: number;
   title: string;
@@ -20,13 +17,10 @@ export type JPJob = {
 };
 
 async function fetchBoardJobs(board: string): Promise<GHJob[]> {
-  const url = `https://boards-api.greenhouse.io/v1/boards/${encodeURIComponent(
-    board
-  )}/jobs`;
+  const url = `https://boards-api.greenhouse.io/v1/boards/${encodeURIComponent(board)}/jobs`;
   const res = await fetch(url, { next: { revalidate: 60 } });
   if (!res.ok) throw new Error(`Greenhouse fetch failed: ${res.status}`);
   const json = await res.json();
-  // Greenhouse shape: { jobs: [...] }
   return Array.isArray(json?.jobs) ? (json.jobs as GHJob[]) : [];
 }
 
@@ -47,10 +41,6 @@ export async function listGreenhouseMapped(board: string): Promise<JPJob[]> {
   }));
 }
 
-/**
- * “Import” betekent hier: haal op en geef gemapt terug.
- * Als je wilt, kun je hier ook naar /data/greenhouse.json schrijven (server-side).
- */
 export async function importGreenhouseBoard(board: string): Promise<JPJob[]> {
   return listGreenhouseMapped(board);
 }
