@@ -1,43 +1,17 @@
 import { NextResponse } from "next/server";
-// relative paths to avoid '@/*' alias issues on Vercel
-import sources from "../../../../../data/sources.json";
-import { dedupe } from "../../../../../lib/normalize";
-import {
-  getGreenhouse,
-  getLever,
-  getAshby,
-  getWorkable,
-  getTeamtailor,
-} from "../../../../../lib/connectors";
+import path from "path";
+import fs from "fs/promises";
 
-// import { PrismaClient } from "@prisma/client";
-// const prisma = new PrismaClient();
-
-export const runtime = "nodejs";
 export const revalidate = 0;
 
-export async function POST() {
-  const tasks: Promise<any[]>[] = [];
-  for (const b of (sources as any).greenhouse ?? []) tasks.push(getGreenhouse(b));
-  for (const b of (sources as any).lever ?? []) tasks.push(getLever(b));
-  for (const b of (sources as any).ashby ?? []) tasks.push(getAshby(b));
-  for (const b of (sources as any).workable ?? []) tasks.push(getWorkable(b));
-  for (const b of (sources as any).teamtailor ?? []) tasks.push(getTeamtailor(b));
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
+    const filePath = path.join(process.cwd(), "data", "sources.json");
+    await fs.writeFile(filePath, JSON.stringify(body, null, 2), "utf8");
 
-  const settled = await Promise.allSettled(tasks);
-  const all: any[] = [];
-  for (const s of settled) if (s.status === "fulfilled") all.push(...s.value);
-
-  const unique = dedupe(all);
-
-  // When DB is ready, upsert here:
-  // await prisma.$transaction(
-  //   unique.map(j => prisma.job.upsert({
-  //     where: { id: j.id },
-  //     update: { ...j },
-  //     create: { ...j, source: j.board ?? "unknown", createdAt: new Date(j.createdAt) }
-  //   }))
-  // );
-
-  return NextResponse.json({ received: unique.length }, { status: 200 });
+    return NextResponse.json({ ok: true }, { status: 200 });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
 }
