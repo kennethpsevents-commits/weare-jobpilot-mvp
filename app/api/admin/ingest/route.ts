@@ -1,16 +1,33 @@
 import { NextResponse } from "next/server";
-import path from "path";
-import fs from "fs/promises";
+import {
+  getGreenhouse,
+  getLever,
+  getAshby,
+  getWorkable,
+  getTeamtailor,
+} from "@/lib/connectors";
+import sources from "@/data/sources.json";
 
-export const revalidate = 0;
-
-export async function POST(req: Request) {
+export async function POST() {
   try {
-    const body = await req.json();
-    const filePath = path.join(process.cwd(), "data", "sources.json");
-    await fs.writeFile(filePath, JSON.stringify(body, null, 2), "utf8");
-    return NextResponse.json({ ok: true }, { status: 200 });
+    const results: Record<string, any[]> = {};
+
+    // Greenhouse boards
+    for (const board of sources.greenhouse) {
+      results[board] = await getGreenhouse(board);
+    }
+
+    // Andere ATS kan later toegevoegd worden:
+    // for (const leverBoard of sources.lever) {
+    //   results[leverBoard] = await getLever(leverBoard);
+    // }
+
+    return NextResponse.json({ results, source: "ingest" });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message ?? "Unknown error" }, { status: 500 });
+    console.error("Ingest error:", err);
+    return NextResponse.json(
+      { error: "Failed to ingest jobs" },
+      { status: 500 }
+    );
   }
 }
