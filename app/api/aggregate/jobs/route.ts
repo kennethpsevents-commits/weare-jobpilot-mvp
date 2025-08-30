@@ -10,20 +10,24 @@ import boards from "@/data/greenhouse.json";
 
 export async function GET() {
   try {
-    const items: any[] = [];
+    if (!Array.isArray(boards)) {
+      return NextResponse.json({ items: [], source: "empty" }, { status: 200 });
+    }
 
-    // Loop door alle greenhouse boards
-    for (const b of boards) {
+    const items = [];
+    for (const b of boards as any[]) {
       const jobs = await getGreenhouse(b.board);
       items.push(...jobs);
     }
 
-    // Eventueel: voeg andere ATS bronnen toe (lever, ashby, workable, teamtailor)
-    // const leverJobs = await getLever("example");
-    // items.push(...leverJobs);
+    // Voor later:
+    // items.push(...(await getLever("example")));
+    // items.push(...(await getAshby("example")));
+    // items.push(...(await getWorkable("example")));
+    // items.push(...(await getTeamtailor("example")));
 
-    return NextResponse.json({ items, source: "aggregate" });
-  } catch (err: any) {
+    return NextResponse.json({ items, source: "aggregate" }, { status: 200 });
+  } catch (err) {
     console.error("Aggregate error:", err);
     return NextResponse.json(
       { error: "Failed to aggregate jobs" },
