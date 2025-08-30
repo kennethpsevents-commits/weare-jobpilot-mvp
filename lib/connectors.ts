@@ -27,3 +27,17 @@ export async function getGreenhouse(board: string): Promise<MinimalJob[]> {
       id: `${board}-seed-1`,
       title: `${company} — Seed Listing`,
       company,
+      url: `https://boards.greenhouse.io/${board}`,
+      location: "Remote",
+      source: "greenhouse",
+      board,
+      description: (meta && (meta as any).description) || ""
+    }
+  ];
+}
+
+// ---- Other ATS stubs (empty for now) ----
+export async function getLever(_board: string): Promise<MinimalJob[]> { return []; }
+export async function getAshby(_board: string): Promise<MinimalJob[]> { return []; }
+export async function getWorkable(_subdomain: string): Promise<MinimalJob[]> { return []; }
+export async function getTeamtailor(_subdomain: string): Promise<MinimalJob[]> { return []; }
