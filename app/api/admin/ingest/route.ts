@@ -12,18 +12,21 @@ export async function POST() {
   try {
     const results: Record<string, any[]> = {};
 
-    // Greenhouse boards
-    for (const board of sources.greenhouse) {
-      results[board] = await getGreenhouse(board);
+    // Greenhouse boards batch
+    if (sources?.greenhouse && Array.isArray(sources.greenhouse)) {
+      for (const board of sources.greenhouse) {
+        results[board] = await getGreenhouse(board);
+      }
     }
 
-    // Andere ATS kan later toegevoegd worden:
-    // for (const leverBoard of sources.lever) {
-    //   results[leverBoard] = await getLever(leverBoard);
-    // }
+    // Voor later:
+    // if (Array.isArray(sources.lever)) { ... await getLever(...) }
+    // if (Array.isArray(sources.ashby)) { ... await getAshby(...) }
+    // if (Array.isArray(sources.workable)) { ... await getWorkable(...) }
+    // if (Array.isArray(sources.teamtailor)) { ... await getTeamtailor(...) }
 
-    return NextResponse.json({ results, source: "ingest" });
-  } catch (err: any) {
+    return NextResponse.json({ results, source: "ingest" }, { status: 200 });
+  } catch (err) {
     console.error("Ingest error:", err);
     return NextResponse.json(
       { error: "Failed to ingest jobs" },
