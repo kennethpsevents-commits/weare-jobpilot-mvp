@@ -1,0 +1,7 @@
+{
+  "greenhouse": ["stripe", "shopify", "figma", "notion"],
+  "lever": ["airbnb", "robinhood", "datadog"],
+  "ashby": ["anthropic", "deepl", "mistral"],
+  "workable": ["supercell", "klarna"],
+  "teamtailor": ["iseid", "northvolt"]
+}
