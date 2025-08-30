@@ -1,38 +1,35 @@
 import { NextResponse } from "next/server";
-// use relative paths to avoid alias issues on Vercel
-import sources from "../../../../data/sources.json";
-import { dedupe } from "../../../../lib/normalize";
-import {
-  getGreenhouse,
-  getLever,
-  getAshby,
-  getWorkable,
-  getTeamtailor,
-} from "../../../../lib/connectors";
+import path from "path";
+import fs from "fs/promises";
+
+// Relative import naar lib ipv alias
+import type { Job } from "../../../lib/types";
 
 export const revalidate = 0;
 
 export async function GET() {
-  const all: any[] = [];
+  try {
+    const filePath = path.join(process.cwd(), "data", "greenhouse.json");
+    const file = await fs.readFile(filePath, "utf8");
+    const boards = JSON.parse(file);
 
-  const gh = (sources as any).greenhouse ?? [];
-  const lv = (sources as any).lever ?? [];
-  const ab = (sources as any).ashby ?? [];
-  const wk = (sources as any).workable ?? [];
-  const tt = (sources as any).teamtailor ?? [];
+    const results: Job[] = [];
 
-  const tasks: Promise<any[]>[] = [
-    ...gh.map((b: string) => getGreenhouse(b)),
-    ...lv.map((b: string) => getLever(b)),
-    ...ab.map((b: string) => getAshby(b)),
-    ...wk.map((b: string) => getWorkable(b)),
-    ...tt.map((b: string) => getTeamtailor(b)),
-  ];
+    for (const board of boards) {
+      results.push({
+        id: board.board,
+        title: `Dummy ${board.name}`,
+        company: board.name,
+        location: "Remote",
+        remote: true,
+        applyUrl: `https://boards.greenhouse.io/${board.board}`,
+        createdAt: new Date().toISOString(),
+        board: board.board,
+      });
+    }
 
-  const settled = await Promise.allSettled(tasks);
-  for (const s of settled) if (s.status === "fulfilled") all.push(...s.value);
-
-  const unique = dedupe(all);
-  unique.sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || ""));
-  return NextResponse.json(unique.slice(0, 2000), { status: 200 });
+    return NextResponse.json(results, { status: 200 });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
 }
