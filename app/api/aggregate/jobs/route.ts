@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 // Let op: pad vanaf /app/api/aggregate/jobs/ naar /lib/types.ts = ../../../../lib/types
 import type { Job } from "../../../../lib/types";
 
+
 // Voorbeeld implementatie: combineer jobs uit data/greenhouse.json
 import boards from "../../../../data/greenhouse.json";
 
