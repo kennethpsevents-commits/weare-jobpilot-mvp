@@ -9,9 +9,8 @@ export async function POST(req: Request) {
     const body = await req.json();
     const filePath = path.join(process.cwd(), "data", "sources.json");
     await fs.writeFile(filePath, JSON.stringify(body, null, 2), "utf8");
-
     return NextResponse.json({ ok: true }, { status: 200 });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: err.message ?? "Unknown error" }, { status: 500 });
   }
 }
