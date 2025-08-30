@@ -1,27 +1,7 @@
 [
-  {
-    "board": "stripe",
-    "name": "Stripe",
-    "description": "Payments infrastructure company"
-  },
-  {
-    "board": "shopify",
-    "name": "Shopify",
-    "description": "E-commerce platform"
-  },
-  {
-    "board": "xai",
-    "name": "xAI",
-    "description": "AI research company"
-  },
-  {
-    "board": "notion",
-    "name": "Notion",
-    "description": "Productivity tool"
-  },
-  {
-    "board": "figma",
-    "name": "Figma",
-    "description": "Design collaboration"
-  }
+  { "board": "stripe",  "name": "Stripe",  "description": "Payments infrastructure company" },
+  { "board": "shopify", "name": "Shopify", "description": "E-commerce platform" },
+  { "board": "xai",     "name": "xAI",     "description": "AI research company" },
+  { "board": "notion",  "name": "Notion",  "description": "Productivity tool" },
+  { "board": "figma",   "name": "Figma",   "description": "Design collaboration" }
 ]
