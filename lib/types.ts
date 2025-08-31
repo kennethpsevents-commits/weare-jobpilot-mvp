@@ -1,10 +1,11 @@
-export type Job = {
+// lib/types.ts
+export interface Job {
   id: string;
   title: string;
   company: string;
-  location?: string;
-  remote: boolean;
+  location: string;
   applyUrl: string;
-  createdAt: string;
-  board?: string;
-};
+  createdAt: string; // ISO
+  remote: boolean;
+  source?: string;   // 'greenhouse' | 'lever' | ...
+}
