@@ -1,5 +1,6 @@
 // lib/connectors.ts
-// Minimal build-safe stubs. Replace with real fetchers later.
+// Alle connectors geven nu minstens 1 dummy job terug.
+// Zo werkt de hele lijst. Later kun je dit vervangen door echte API calls.
 
 import greenhouseBoards from "@/data/greenhouse.json";
 
@@ -14,7 +15,7 @@ export type MinimalJob = {
   description?: string;
 };
 
-// ---- Greenhouse (seed: 1 item per board) ----
+// ---- Greenhouse (seed jobs uit data/greenhouse.json) ----
 export async function getGreenhouse(board: string): Promise<MinimalJob[]> {
   const meta =
     Array.isArray(greenhouseBoards) &&
@@ -25,19 +26,77 @@ export async function getGreenhouse(board: string): Promise<MinimalJob[]> {
   return [
     {
       id: `${board}-seed-1`,
-      title: `${company} — Seed Listing`,
+      title: `${company} — Greenhouse Listing`,
       company,
       url: `https://boards.greenhouse.io/${board}`,
       location: "Remote",
       source: "greenhouse",
       board,
-      description: (meta && (meta as any).description) || ""
+      description: (meta && (meta as any).description) || "Greenhouse seed job"
     }
   ];
 }
 
-// ---- Other ATS stubs (empty for now) ----
-export async function getLever(_board: string): Promise<MinimalJob[]> { return []; }
-export async function getAshby(_board: string): Promise<MinimalJob[]> { return []; }
-export async function getWorkable(_subdomain: string): Promise<MinimalJob[]> { return []; }
-export async function getTeamtailor(_subdomain: string): Promise<MinimalJob[]> { return []; }
+// ---- Lever ----
+export async function getLever(board: string): Promise<MinimalJob[]> {
+  return [
+    {
+      id: `${board}-lever-1`,
+      title: `${board} — Lever Listing`,
+      company: board,
+      url: `https://${board}.lever.co`,
+      location: "Hybrid",
+      source: "lever",
+      board,
+      description: "Dummy Lever job"
+    }
+  ];
+}
+
+// ---- Ashby ----
+export async function getAshby(board: string): Promise<MinimalJob[]> {
+  return [
+    {
+      id: `${board}-ashby-1`,
+      title: `${board} — Ashby Listing`,
+      company: board,
+      url: `https://${board}.ashbyhq.com`,
+      location: "On-site",
+      source: "ashby",
+      board,
+      description: "Dummy Ashby job"
+    }
+  ];
+}
+
+// ---- Workable ----
+export async function getWorkable(subdomain: string): Promise<MinimalJob[]> {
+  return [
+    {
+      id: `${subdomain}-workable-1`,
+      title: `${subdomain} — Workable Listing`,
+      company: subdomain,
+      url: `https://${subdomain}.workable.com`,
+      location: "Remote",
+      source: "workable",
+      board: subdomain,
+      description: "Dummy Workable job"
+    }
+  ];
+}
+
+// ---- Teamtailor ----
+export async function getTeamtailor(subdomain: string): Promise<MinimalJob[]> {
+  return [
+    {
+      id: `${subdomain}-teamtailor-1`,
+      title: `${subdomain} — Teamtailor Listing`,
+      company: subdomain,
+      url: `https://${subdomain}.teamtailor.com`,
+      location: "Remote",
+      source: "teamtailor",
+      board: subdomain,
+      description: "Dummy Teamtailor job"
+    }
+  ];
+}
