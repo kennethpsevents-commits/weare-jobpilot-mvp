@@ -1,12 +1,18 @@
 // app/api/admin/ingest/route.ts
 import { NextResponse } from 'next/server';
 import { getGreenhouse, getLever } from '@/lib/connectors';
+import { adminDb } from '@/lib/firebaseAdmin';
+
+type Body = {
+  sources?: ('greenhouse' | 'lever')[];
+  boards?: string[];
+};
 
 export const dynamic = 'force-dynamic';
 
-// MVP: haalt jobs op en retourneert ze (later: persist via Prisma)
-export async function POST(request: Request) {
-  const { sources = ['greenhouse','lever'], boards = ['stripe'] } = await request.json().catch(() => ({}));
+export async function POST(req: Request) {
+  const { sources = ['greenhouse', 'lever'], boards = ['stripe'] } as Body =
+    await req.json().catch(() => ({}));
 
   const tasks: Promise<any[]>[] = [];
   for (const b of boards) {
@@ -15,6 +21,16 @@ export async function POST(request: Request) {
   }
 
   const jobs = (await Promise.all(tasks)).flat();
-  // TODO(v1.1): upsert naar DB
-  return NextResponse.json({ ok: true, ingested: jobs.length, jobs });
+
+  // persist (upsert) in Firestore
+  const batch = adminDb.batch();
+  const col = adminDb.collection('jobs');
+
+  for (const j of jobs) {
+    const ref = col.doc(j.id);
+    batch.set(ref, j, { merge: true });
+  }
+  await batch.commit();
+
+  return NextResponse.json({ ok: true, ingested: jobs.length });
 }
