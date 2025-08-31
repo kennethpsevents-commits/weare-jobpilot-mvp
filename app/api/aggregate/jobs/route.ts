@@ -1,23 +1,21 @@
-import { NextResponse } from "next/server";
-import { getGreenhouse, getLever, getAshby, getWorkable, getTeamtailor } from "@/lib/connectors";
-import boards from "@/data/greenhouse.json";
+// app/api/aggregate/jobs/route.ts
+import { NextResponse } from 'next/server';
+import { getGreenhouse, getLever, getAshby, getWorkable, getTeamtailor } from '@/lib/connectors';
 
-export async function GET() {
-  try {
-    if (!Array.isArray(boards)) {
-      return NextResponse.json({ items: [], source: "empty" }, { status: 200 });
-    }
+export const dynamic = 'force-dynamic';
 
-    const items: any[] = [];
-    for (const b of boards as any[]) {
-      const jobs = await getGreenhouse(b.board);
-      items.push(...jobs);
-    }
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const source = (searchParams.get('source') ?? 'greenhouse,lever').split(',').map(s => s.trim());
+  const board = searchParams.get('board') ?? 'stripe';
 
-    // Later: add Lever/Ashby/Workable/Teamtailor
-    return NextResponse.json({ items, source: "aggregate" }, { status: 200 });
-  } catch (err) {
-    console.error("Aggregate error:", err);
-    return NextResponse.json({ error: "Failed to aggregate jobs" }, { status: 500 });
-  }
+  const tasks: Promise<any[]>[] = [];
+  if (source.includes('greenhouse')) tasks.push(getGreenhouse(board));
+  if (source.includes('lever')) tasks.push(getLever(board));
+  if (source.includes('ashby')) tasks.push(getAshby(board));
+  if (source.includes('workable')) tasks.push(getWorkable(board));
+  if (source.includes('teamtailor')) tasks.push(getTeamtailor(board));
+
+  const results = (await Promise.all(tasks)).flat();
+  return NextResponse.json({ count: results.length, board, source, jobs: results });
 }
