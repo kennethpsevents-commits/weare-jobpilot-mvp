@@ -1,20 +1,20 @@
-import { NextResponse } from "next/server";
-import { getGreenhouse, getLever, getAshby, getWorkable, getTeamtailor } from "@/lib/connectors";
-import sources from "@/data/sources.json";
+// app/api/admin/ingest/route.ts
+import { NextResponse } from 'next/server';
+import { getGreenhouse, getLever } from '@/lib/connectors';
 
-export async function POST() {
-  try {
-    const results: Record<string, any[]> = {};
+export const dynamic = 'force-dynamic';
 
-    if (sources?.greenhouse && Array.isArray(sources.greenhouse)) {
-      for (const board of sources.greenhouse) {
-        results[board] = await getGreenhouse(board);
-      }
-    }
+// MVP: haalt jobs op en retourneert ze (later: persist via Prisma)
+export async function POST(request: Request) {
+  const { sources = ['greenhouse','lever'], boards = ['stripe'] } = await request.json().catch(() => ({}));
 
-    return NextResponse.json({ results, source: "ingest" }, { status: 200 });
-  } catch (err) {
-    console.error("Ingest error:", err);
-    return NextResponse.json({ error: "Failed to ingest jobs" }, { status: 500 });
+  const tasks: Promise<any[]>[] = [];
+  for (const b of boards) {
+    if (sources.includes('greenhouse')) tasks.push(getGreenhouse(b));
+    if (sources.includes('lever')) tasks.push(getLever(b));
   }
+
+  const jobs = (await Promise.all(tasks)).flat();
+  // TODO(v1.1): upsert naar DB
+  return NextResponse.json({ ok: true, ingested: jobs.length, jobs });
 }
