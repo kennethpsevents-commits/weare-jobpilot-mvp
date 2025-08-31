@@ -1,75 +1,81 @@
 "use client";
-
 import { useState } from "react";
 
-type Msg = {
-  role: "system" | "user" | "assistant";
-  content: string;
-};
+export default function AICareerMatchPage() {
+  const [role, setRole] = useState("");
+  const [skills, setSkills] = useState<string>(""); // comma-separated in input
+  const [location, setLocation] = useState("");
+  const [seniority, setSeniority] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [resp, setResp] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
 
-export default function AIPage() {
-  const [chat, setChat] = useState<Msg[]>([]);
-  const [input, setInput] = useState("");
-  const [busy, setBusy] = useState(false);
-
-  async function handleSend() {
-    if (!input || busy) return;
-
-    const nextChat: Msg[] = [...chat, { role: "user", content: input }];
-    setChat(nextChat);
-    setInput("");
-    setBusy(true);
-
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setResp(null);
     try {
-      // voorbeeld call naar je eigen API
-      const res = await fetch("/api/ai", {
+      const r = await fetch("/api/ai/match", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: nextChat }),
+        body: JSON.stringify({
+          role,
+          skills: skills.split(",").map(s => s.trim()).filter(Boolean),
+          location,
+          seniority
+        }),
       });
-      const data = await res.json();
-
-      setChat([...nextChat, { role: "assistant", content: data.reply }]);
-    } catch (err: any) {
-      setChat([...nextChat, { role: "assistant", content: "Error: " + err.message }]);
+      const json = await r.json();
+      if (!r.ok) throw new Error(json?.error || "Request failed");
+      setResp(json);
+    } catch (e: any) {
+      setError(e?.message ?? String(e));
     } finally {
-      setBusy(false);
+      setLoading(false);
     }
   }
 
   return (
     <main className="max-w-2xl mx-auto p-6 space-y-4">
-      <h1 className="text-2xl font-semibold">AI Career Match</h1>
+      <h1 className="text-2xl font-bold">AI Career Match</h1>
 
-      <div className="space-y-2">
-        {chat.map((msg, i) => (
-          <div
-            key={i}
-            className={`p-2 rounded ${
-              msg.role === "user" ? "bg-blue-100 text-blue-900" : "bg-gray-100 text-gray-900"
-            }`}
-          >
-            <strong>{msg.role}: </strong>
-            {msg.content}
-          </div>
-        ))}
-      </div>
-
-      <div className="flex gap-2">
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Typ je vraag..."
-          className="flex-1 border p-2 rounded"
-        />
-        <button
-          onClick={handleSend}
-          disabled={busy}
-          className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
-        >
-          Verstuur
+      <form onSubmit={onSubmit} className="space-y-3">
+        <input className="border rounded px-3 py-2 w-full" placeholder="Target role"
+          value={role} onChange={e=>setRole(e.target.value)} />
+        <input className="border rounded px-3 py-2 w-full" placeholder="Skills (comma separated)"
+          value={skills} onChange={e=>setSkills(e.target.value)} />
+        <div className="grid grid-cols-2 gap-3">
+          <input className="border rounded px-3 py-2 w-full" placeholder="Location"
+            value={location} onChange={e=>setLocation(e.target.value)} />
+          <input className="border rounded px-3 py-2 w-full" placeholder="Seniority"
+            value={seniority} onChange={e=>setSeniority(e.target.value)} />
+        </div>
+        <button disabled={loading} className="px-4 py-2 rounded bg-blue-600 text-white">
+          {loading ? "Analyzing..." : "Find matches"}
         </button>
-      </div>
+      </form>
+
+      {error && <div className="p-3 bg-red-100 text-red-800 rounded">{error}</div>}
+
+      {resp && (
+        <div className="p-4 border rounded">
+          <div className="text-xs text-gray-500 mb-2">mode: {resp.mode}</div>
+          <div className="font-semibold mb-1">{resp.result?.summary}</div>
+          <div className="mt-2">
+            <div className="font-medium">Top roles</div>
+            <ul className="list-disc ml-5">
+              {(resp.result?.top_roles ?? []).map((x: string) => <li key={x}>{x}</li>)}
+            </ul>
+          </div>
+          <div className="mt-2">
+            <div className="font-medium">Skills to add</div>
+            <ul className="list-disc ml-5">
+              {(resp.result?.skills_to_add ?? []).map((x: string) => <li key={x}>{x}</li>)}
+            </ul>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
