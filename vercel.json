@@ -1,6 +1,5 @@
 {
   "crons": [
-    { "path": "/api/import/himalayas", "schedule": "0 6 * * *" },
-    { "path": "/api/import/remotive",  "schedule": "0 7 * * *" }
+    { "path": "/api/admin/ingest-cron", "schedule": "0 */6 * * *" }
   ]
 }
