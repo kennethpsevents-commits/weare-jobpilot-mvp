@@ -2,25 +2,33 @@
 
 import { useEffect, useState } from "react";
 
-type Job = { id: string; title: string; company: string; location: string; url: string };
+type Job = {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  url: string;
+};
 
 export default function VacaturesPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    (async () => {
+    async function fetchJobs() {
       try {
         const res = await fetch("/api/aggregate/jobs", { cache: "no-store" });
+        if (!res.ok) throw new Error("API fout");
         const data = await res.json();
         setJobs(data.jobs || []);
-      } catch (e) {
-        console.error(e);
+      } catch (err) {
+        console.error("Fout bij ophalen:", err);
         setJobs([]);
       } finally {
         setLoading(false);
       }
-    })();
+    }
+    fetchJobs();
   }, []);
 
   return (
@@ -28,7 +36,10 @@ export default function VacaturesPage() {
       <h1 className="text-3xl font-bold mb-6">Vacatures</h1>
 
       {loading && <p>Vacatures laden...</p>}
-      {!loading && jobs.length === 0 && <p>Geen vacatures gevonden.</p>}
+
+      {!loading && jobs.length === 0 && (
+        <p>Geen vacatures gevonden.</p>
+      )}
 
       <div className="grid gap-4">
         {jobs.map((job) => (
