@@ -1,10 +1,8 @@
-// app/api/ai/cv/route.ts
-import { NextResponse } from 'next/server';
-import { pipeline } from '@xenova/transformers';
+import { NextResponse } from "next/server";
 
-export async function POST(req: Request) {
-  const { cvText, jobDesc } = await req.json();
-  const classifier = await pipeline('zero-shot-classification');
-  const result = await classifier(cvText, [jobDesc]);
-  return NextResponse.json({ result });
+export async function POST() {
+  return NextResponse.json(
+    { ok: false, message: "CV AI endpoint is tijdelijk uitgeschakeld (coming soon)." },
+    { status: 501 }
+  );
 }
