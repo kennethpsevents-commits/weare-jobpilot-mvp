@@ -1,38 +1,64 @@
-import { NextResponse } from "next/server";
-
-type GHJob = { id: number; title: string; absolute_url: string; location?: { name?: string }; updated_at?: string; };
-type JPJob = { id: string; title: string; company: string; location?: string; remote: boolean; applyUrl: string; createdAt: string; };
-
-async function fetchBoardJobs(board: string): Promise<GHJob[]> {
-  const url = `https://boards-api.greenhouse.io/v1/boards/${encodeURIComponent(board)}/jobs`;
-  const res = await fetch(url, { next: { revalidate: 60 } });
-  if (!res.ok) throw new Error(`Greenhouse fetch failed: ${res.status}`);
-  const json = await res.json();
-  return Array.isArray(json?.jobs) ? (json.jobs as GHJob[]) : [];
+import { NextResponse } from 'next/server';
+interface Job {
+  id: number;
+  title: string;
+  location: string;
+  department: string;
+  salary: string;
+  url: string;
+  remote: boolean;
+  employment_type: string;
 }
-
-function mapJobs(board: string, jobs: GHJob[]): JPJob[] {
-  return jobs.map((j) => ({
-    id: String(j.id),
-    title: j.title ?? "Untitled",
-    company: board,
-    location: j.location?.name ?? undefined,
-    remote: (j.location?.name ?? "").toLowerCase().includes("remote"),
-    applyUrl: j.absolute_url,
-    createdAt: j.updated_at ?? new Date().toISOString(),
-  }));
-}
-
-export const revalidate = 0;
-
-export async function GET(_req: Request, ctx: { params: { board: string } }) {
+export async function GET(
+  request: Request,
+  { params }: { params: { board: string } }
+) {
   try {
-    const board = ctx?.params?.board;
-    if (!board) return NextResponse.json({ error: "Missing board" }, { status: 400 });
-    const gh = await fetchBoardJobs(board);
-    const data = mapJobs(board, gh);
-    return NextResponse.json(data, { status: 200 });
-  } catch (err: any) {
-    return NextResponse.json({ error: err?.message ?? "Unknown error" }, { status: 500 });
+    const { board } = params;
+    const apiKey = process.env.GREENHOUSE_API_KEY;
+   
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: 'Missing API key' },
+        { status: 500 }
+      );
+    }
+    const response = await fetch(
+      `https://boards-api.greenhouse.io/v1/boards/${board}/jobs?content=true`,
+      {
+        headers: {
+          'Authorization': `Basic ${Buffer.from(apiKey + ':').toString('base64')}`
+        }
+      }
+    );
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+   
+    const jobs: Job[] = data.jobs.map((job: any) => ({
+      id: job.id,
+      title: job.title,
+      location: job.location?.name || 'Remote',
+      department: job.departments[0]?.name || 'Other',
+      salary: job.salary || 'Competitive',
+      url: job.absolute_url,
+      remote: job.location?.name?.toLowerCase().includes('remote') || false,
+      employment_type: job.employment_type || 'Full-time'
+    }));
+    return NextResponse.json({
+      jobs,
+      meta: {
+        board: data.board.name,
+        company: data.board.company_name,
+        total_jobs: jobs.length
+      }
+    });
+  } catch (error) {
+    console.error('Greenhouse API Error:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch jobs' },
+      { status: 500 }
+    );
   }
 }
