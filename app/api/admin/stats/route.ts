@@ -1,4 +1,3 @@
-// app/api/admin/stats/route.ts
 import { NextResponse } from 'next/server';
 
 export const runtime = 'nodejs'; // forceer Node runtime
