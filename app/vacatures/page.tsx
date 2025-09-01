@@ -1,32 +1,28 @@
-import { JobCard } from "../../components/JobCard";
+// app/vacatures/page.tsx
+"use client";
+import useSWR from "swr";
 
-type JobsPayload = { jobs: Array<{
-  id: string; title: string; company: string; location: string; url: string; source: string;
-}>; count: number; };
+type JobItem = { id: number; title: string; location: string; url: string; };
+const fetcher = (url: string) => fetch(url).then(r => r.json());
 
-async function getJobs() {
-  const base = process.env.NEXT_PUBLIC_BASE_URL ?? "";
-  const res = await fetch(`${base}/api/jobs`, { cache: "no-store" });
-  if (!res.ok) return { jobs: [], count: 0 } as JobsPayload;
-  return (await res.json()) as JobsPayload;
-}
+export default function VacaturesPage() {
+  const { data, error, isLoading } = useSWR<{ jobs: JobItem[] }>("/api/jobs", fetcher, { revalidateOnFocus: false });
 
-export default async function VacaturesPage() {
-  const { jobs, count } = await getJobs();
+  if (error) return <div className="p-6">Kon vacatures niet laden.</div>;
+  if (isLoading || !data) return <div className="p-6">Laden…</div>;
 
   return (
-    <main className="mx-auto max-w-4xl p-6">
-      <h1 className="text-2xl font-bold mb-4">Vacatures ({count})</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {jobs.map((j) => (
-          <JobCard key={j.id} job={j as any} />
+    <main className="p-6 max-w-4xl mx-auto">
+      <h1 className="text-2xl font-bold mb-4">Vacatures</h1>
+      <div className="grid gap-3">
+        {data.jobs.map(job => (
+          <a key={job.id} href={job.url} target="_blank" rel="noreferrer"
+             className="rounded-2xl p-4 border hover:shadow transition">
+            <div className="text-lg font-semibold">{job.title}</div>
+            <div className="text-sm opacity-70">{job.location}</div>
+          </a>
         ))}
       </div>
-      {count === 0 && (
-        <p className="text-sm text-gray-600 mt-6">
-          Nog geen data. Bezoek eerst <code>/api/admin/ingest</code>.
-        </p>
-      )}
     </main>
   );
 }
