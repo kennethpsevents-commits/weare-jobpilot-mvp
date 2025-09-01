@@ -1,6 +1,7 @@
 // lib/firebaseAdmin.ts
-export const firebaseAdmin = {
-  app: null as any,
-  auth: () => { throw new Error("Firebase Admin not configured."); },
-  firestore: () => { throw new Error("Firebase Admin not configured."); },
-};
+// No-op fallback: geen hard dependency op 'firebase-admin' tijdens build.
+export function getAdmin() {
+  throw new Error(
+    'Firebase Admin is disabled in this environment. Remove imports, or provide proper server-only initialization.'
+  );
+}
