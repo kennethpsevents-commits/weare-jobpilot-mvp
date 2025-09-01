@@ -1,37 +1,48 @@
-"use client";
-import { useState } from "react";
+import React, { useState } from 'react';
 
-export default function RegisterPage() {
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    instagram: "",
-    tiktok: "",
-    linkedin: "",
-    whatsapp: "",
-    password: ""
-  });
+export default function Register() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  }
-
-  function handleSubmit(e: React.FormEvent) {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert("Registratie opgeslagen (koppel hier Auth + Firestore/Supabase).");
-  }
+    // Add logic to submit form (e.g., to Supabase or API)
+    alert('Form submitted! Name: ' + name + ', Email: ' + email);
+  };
 
   return (
     <div className="max-w-lg mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Account aanmaken</h1>
-      <form onSubmit={handleSubmit} className="grid gap-4">
-        <input name="name" placeholder="Naam" onChange={handleChange} className="border p-2" />
-        <input name="email" placeholder="Email" onChange={handleChange} className="border p-2" />
-        <input name="phone" placeholder="Telefoon" onChange={handleChange} className="border p-2" />
-        <input name="instagram" placeholder="Instagram" onChange={handleChange} className="border p-2" />
-        <input name="tiktok" placeholder="TikTok" onChange={handleChange} className="border p-2" />
-        <input name="linkedin" placeholder="LinkedIn" onChange={handleChange} className="border p-2" />
-        <input name="whatsapp" placeholder="WhatsApp" onChange={handleChange} className="border p-2" />
-        <input name="password" type="password" placeholder="Wachtwoord" onChange={handleChange} className="border p-2" />
-        <button className="px-4 py-2 bg-black text-white rounded">Regist
+      <h1 className="text-2xl font-bold mb-4">Account Aanmaken</h1>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input 
+          type="text" 
+          value={name} 
+          onChange={(e) => setName(e.target.value)} 
+          placeholder="Naam" 
+          className="border p-2 w-full" 
+          required 
+        />
+        <input 
+          type="email" 
+          value={email} 
+          onChange={(e) => setEmail(e.target.value)} 
+          placeholder="Email" 
+          className="border p-2 w-full" 
+          required 
+        />
+        <input 
+          type="password" 
+          value={password} 
+          onChange={(e) => setPassword(e.target.value)} 
+          placeholder="Wachtwoord" 
+          className="border p-2 w-full" 
+          required 
+        />
+        <button type="submit" className="bg-blue-500 text-white p-2 rounded w-full">
+          Verzenden
+        </button>
+      </form>
+    </div>
+  );
+}
