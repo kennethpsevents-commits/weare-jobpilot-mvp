@@ -1,26 +1,33 @@
 import "./globals.css";
-import type { Metadata } from "next";
+import Link from "next/link";
 
-export const metadata: Metadata = {
-  title: "We Are JobPilot — Find Work Faster",
-  description: "AI-ready job search MVP with clean UX.",
-  robots: { index: true, follow: true },
-  icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" }
+export const metadata = {
+  title: "WeAreJobPilot",
+  description: "Uw AI-Aangedreven Baanreis Begint Hier",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="nl">
       <body>
-        <header className="container mx-auto py-4 flex gap-4">
-          <a href="/" className="font-semibold">WeAre_JobPilot</a>
-          <nav className="ml-auto flex gap-3">
-            <a href="/vacatures">Vacatures</a>
-            <a href="/ai">AI Career Match</a>
-            <a href="/employers" className="btn btn-outline">Plaats een vacature</a>
+        <header className="border-b bg-gray-50">
+          <nav className="max-w-4xl mx-auto flex gap-6 p-4">
+            <Link href="/" className="font-bold hover:underline">
+              Home
+            </Link>
+            <Link href="/vacatures" className="hover:underline">
+              Vacatures
+            </Link>
+            <Link href="/ai" className="hover:underline">
+              AI Assistent
+            </Link>
           </nav>
         </header>
-        {children}
+        <main className="max-w-4xl mx-auto p-6">{children}</main>
       </body>
     </html>
   );
