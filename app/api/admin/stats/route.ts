@@ -1,6 +1,5 @@
 // app/api/admin/stats/route.ts
 import { NextResponse } from 'next/server';
-
 export const runtime = 'nodejs';
 
 export async function GET() {
