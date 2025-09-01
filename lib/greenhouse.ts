@@ -8,10 +8,11 @@ export type JobItem = {
 };
 
 export async function listGreenhouseMapped(board: string): Promise<JobItem[]> {
-  const res = await fetch(`https://boards-api.greenhouse.io/v1/boards/${board}/jobs`, { next: { revalidate: 300 } });
-  if (!res.ok) {
-    throw new Error(`Greenhouse fetch failed: ${res.status} ${res.statusText}`);
-  }
+  const res = await fetch(
+    `https://boards-api.greenhouse.io/v1/boards/${board}/jobs`,
+    { next: { revalidate: 300 } }
+  );
+  if (!res.ok) throw new Error(`Greenhouse fetch failed: ${res.status} ${res.statusText}`);
   const data = await res.json();
   const jobs = Array.isArray(data.jobs) ? data.jobs : [];
   return jobs.map((job: any) => ({
