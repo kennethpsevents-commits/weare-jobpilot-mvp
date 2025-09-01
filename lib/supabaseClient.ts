@@ -8,13 +8,12 @@ if (!supabaseUrl || !supabaseKey) {
   throw new Error('Missing Supabase environment variables');
 }
 
-// Eén singleton client — let op: GEEN "export function createClient()" hier.
+// Single, shared client (no exported "createClient" function anywhere).
 export const supabase = createSupabaseClient(supabaseUrl, supabaseKey);
 
-// Compatibiliteitshelper: bestaande code kan dit aanroepen.
+// Optional helper for existing call sites
 export function getSupabaseClient() {
   return supabase;
 }
 
-// Optioneel: default export
 export default supabase;
