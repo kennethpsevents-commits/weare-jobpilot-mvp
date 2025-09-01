@@ -11,3 +11,4 @@ export async function GET() {
     note: 'Firebase-admin disabled to unblock builds.',
   });
 }
+
