@@ -3,7 +3,7 @@ import { createClient as supabaseCreateClient } from "@supabase/supabase-js";
 
 let _client: ReturnType<typeof supabaseCreateClient> | null = null;
 
-/** Singleton client – voorkomt naamconflict met de import "createClient". */
+/** Singleton client – geen naamconflict meer met "createClient" uit het pakket. */
 export function getSupabaseClient() {
   if (_client) return _client;
 
