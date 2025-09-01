@@ -1,6 +1,20 @@
 // lib/firebaseAdmin.ts
-export function getAdmin() {
-  throw new Error(
-    'Firebase Admin is disabled in this environment. Remove imports, or provide proper server-only initialization.'
-  );
+import 'server-only';
+
+let _admin: typeof import('firebase-admin') | null = null;
+
+export async function getAdmin() {
+  if (_admin) return _admin;
+
+  const admin = await import('firebase-admin');
+
+  // Initialize once
+  if (admin.getApps().length === 0) {
+    admin.initializeApp({
+      // Optionally pass credentials here if not using default env
+      // credential: admin.credential.applicationDefault(),
+    });
+  }
+  _admin = admin;
+  return _admin;
 }
