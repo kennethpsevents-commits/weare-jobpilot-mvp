@@ -7,7 +7,6 @@ const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 export default function VacaturesPage() {
   const { data, error, isLoading } = useSWR<{ jobs: JobItem[] }>("/api/jobs", fetcher, { revalidateOnFocus: false });
-
   if (error) return <div className="p-6">Kon vacatures niet laden.</div>;
   if (isLoading || !data) return <div className="p-6">Laden…</div>;
 
