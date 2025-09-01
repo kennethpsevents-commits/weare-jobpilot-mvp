@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import type { Job } from "../lib/types";
+import type { Job } from "@/lib/types";
 
 export function JobCard({ job }: { job: Job }) {
   return (
