@@ -5,7 +5,7 @@ import { listGreenhouseMapped } from "@/lib/greenhouse";
 export async function GET() {
   try {
     const stripeJobs = await listGreenhouseMapped("stripe");
-    const jobs = stripeJobs.sort((a, b) => a.title.localeCompare(b.title)); // baseline sort
+    const jobs = stripeJobs.sort((a, b) => a.title.localeCompare(b.title));
     return NextResponse.json(
       { jobs },
       { status: 200, headers: { "Cache-Control": "s-maxage=300, stale-while-revalidate=60" } }
