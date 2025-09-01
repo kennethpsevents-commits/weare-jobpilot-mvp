@@ -5,11 +5,11 @@ type Cache = {
   lastIngest?: string;
 };
 
-const globalAny = globalThis as any;
-if (!globalAny.__JOBPILOT_CACHE__) {
-  globalAny.__JOBPILOT_CACHE__ = { jobs: [] } as Cache;
+const g = globalThis as any;
+if (!g.__JOBPILOT_CACHE__) {
+  g.__JOBPILOT_CACHE__ = { jobs: [] } as Cache;
 }
-export const cache: Cache = globalAny.__JOBPILOT_CACHE__;
+export const cache: Cache = g.__JOBPILOT_CACHE__;
 
 export function setJobs(jobs: Job[]) {
   cache.jobs = jobs;
