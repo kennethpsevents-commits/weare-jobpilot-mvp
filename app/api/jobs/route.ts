@@ -1,14 +1,17 @@
+// app/api/jobs/route.ts
 import { NextResponse } from "next/server";
-import { getJobs, setJobs } from "../../../lib/store";
-import { listGreenhouseMapped } from "../../../lib/connectors";
-
-const DEFAULT_BOARDS = ["stripe"];
+import { listGreenhouseMapped } from "@/lib/greenhouse";
 
 export async function GET() {
-  let jobs = getJobs();
-  if (!jobs || jobs.length === 0) {
-    jobs = await listGreenhouseMapped(DEFAULT_BOARDS);
-    setJobs(jobs);
+  try {
+    const stripeJobs = await listGreenhouseMapped("stripe");
+    // Baseline sortering: alfabetisch op titel
+    const jobs = stripeJobs.sort((a, b) => a.title.localeCompare(b.title));
+    return NextResponse.json(
+      { jobs },
+      { status: 200, headers: { "Cache-Control": "s-maxage=300, stale-while-revalidate=60" } }
+    );
+  } catch (err: any) {
+    return NextResponse.json({ error: err?.message ?? "Unknown error" }, { status: 500 });
   }
-  return NextResponse.json({ jobs, count: jobs.length });
 }
