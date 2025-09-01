@@ -8,10 +8,10 @@ if (!supabaseUrl || !supabaseKey) {
   throw new Error('Missing Supabase environment variables');
 }
 
-// Eén singleton client — LET OP: GEEN export function createClient() meer.
+// Eén singleton client — LET OP: GEEN `export function createClient()` meer.
 export const supabase = createSupabaseClient(supabaseUrl, supabaseKey);
 
-// Compatibiliteit voor bestaande aanroepen
+// Compatibiliteitshelper voor bestaande aanroepen
 export function getSupabaseClient() {
   return supabase;
 }
