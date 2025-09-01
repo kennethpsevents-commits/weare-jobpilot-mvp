@@ -1,41 +1,50 @@
-export const revalidate = 0;
+"use client";
 
-type Job = {
-  id: string; title: string; company: string;
-  location?: string; remote: boolean; applyUrl: string; createdAt: string;
-};
+import { useEffect, useState } from "react";
 
-async function getAll() {
-  const base = process.env.NEXT_PUBLIC_SITE_URL
-    || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "")
-    || "http://localhost:3000";
-  const r = await fetch(`${base}/api/aggregate/jobs`, { cache: "no-store" });
-  return (await r.json()) as Job[];
-}
+type Job = { id: string; title: string; company: string; location: string; url: string };
 
-export default async function Vacatures() {
-  const jobs = await getAll();
+export default function VacaturesPage() {
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch("/api/aggregate/jobs", { cache: "no-store" });
+        const data = await res.json();
+        setJobs(data.jobs || []);
+      } catch (e) {
+        console.error(e);
+        setJobs([]);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
   return (
-    <main className="max-w-6xl mx-auto p-6 space-y-4">
-      <h1 className="text-2xl font-semibold">Vacatures</h1>
-      <div className="text-sm opacity-70">{jobs.length} resultaten</div>
-      {jobs.length === 0 ? (
-        <p className="opacity-70">Geen vacatures gevonden.</p>
-      ) : (
-        <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {jobs.map((j) => (
-            <li key={j.id} className="rounded-2xl border p-4 hover:shadow-sm transition">
-              <div className="font-medium">{j.title}</div>
-              <div className="text-sm opacity-70">
-                {j.company} {j.location ? `• ${j.location}` : ""} {j.remote ? "• Remote" : ""}
-              </div>
-              <a className="underline mt-2 inline-block" href={j.applyUrl} target="_blank" rel="noreferrer">
-                Apply
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
-    </main>
+    <div className="max-w-3xl mx-auto p-6">
+      <h1 className="text-3xl font-bold mb-6">Vacatures</h1>
+
+      {loading && <p>Vacatures laden...</p>}
+      {!loading && jobs.length === 0 && <p>Geen vacatures gevonden.</p>}
+
+      <div className="grid gap-4">
+        {jobs.map((job) => (
+          <a
+            key={job.id}
+            href={job.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block p-4 border rounded-lg hover:bg-gray-50 transition"
+          >
+            <h2 className="text-xl font-semibold">{job.title}</h2>
+            <p className="text-gray-600">{job.company}</p>
+            <p className="text-gray-500 text-sm">{job.location}</p>
+          </a>
+        ))}
+      </div>
+    </div>
   );
 }
