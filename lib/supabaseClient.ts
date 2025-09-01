@@ -10,8 +10,13 @@ if (!supabaseUrl || !supabaseKey) {
   );
 }
 
-// Eén singleton client, géén "export function createClient" meer.
+// Eén singleton client, géén export function createClient() meer.
 export const supabase = createSupabaseClient(supabaseUrl, supabaseKey);
+
+// Kleine helper voor bestaande aanroepen in je codebase.
+export function getSupabaseClient() {
+  return supabase;
+}
 
 // (optioneel) default export
 export default supabase;
