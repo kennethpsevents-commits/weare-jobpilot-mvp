@@ -1,0 +1,11 @@
+[functions]
+# default
+
+[functions.crawl-greenhouse]
+verify_jwt = false
+[[functions.crawl-greenhouse.crons]]
+# elke 30 minuten
+schedule = "*/30 * * * *"
+
+[functions.get-jobs]
+verify_jwt = false
