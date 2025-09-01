@@ -1,13 +1,25 @@
 // lib/supabaseClient.ts
-import { createClient } from "@supabase/supabase-js";
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
-export function getSupabaseClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error("Missing Supabase environment variables.");
-  }
-
-  return createClient(supabaseUrl, supabaseAnonKey);
+// Fail fast met duidelijke fout als env mist (maar geen non-null assertions gebruiken)
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error(
+    'Missing Supabase env vars: set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY'
+  );
 }
+
+/**
+ * Singleton Supabase client voor browser + RSC-compatibele omgevingen.
+ * Voor server-side admin use-cases: maak een apart server-only client.
+ */
+export const supabase = createSupabaseClient(supabaseUrl, supabaseKey);
+
+/** Backward-compatible helper; sommige files kunnen dit verwachten. */
+export function getSupabaseClient() {
+  return supabase;
+}
+
+export default supabase;
