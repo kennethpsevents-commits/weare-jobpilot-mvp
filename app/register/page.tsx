@@ -5,6 +5,6 @@ import { getSupabaseClient } from '@/lib/supabaseClient';
 
 export default function RegisterPage() {
   const supabase = getSupabaseClient();
-  // ... rest ongewijzigd
-  return null; // vervang met jouw UI
+  // TODO: bouw hier je UI met supabase
+  return null;
 }
