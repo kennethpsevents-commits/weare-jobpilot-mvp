@@ -1,20 +1,23 @@
 // lib/firebaseAdmin.ts
-import 'server-only';
+// Build-safe fallback zodat Vercel niet breekt bij 'firebase-admin' imports
 
-let _admin: typeof import('firebase-admin') | null = null;
+let admin: typeof import('firebase-admin') | null = null;
 
-export async function getAdmin() {
-  if (_admin) return _admin;
-
-  const admin = await import('firebase-admin');
-
-  // Initialize once
-  if (admin.getApps().length === 0) {
+if (process.env.FIREBASE_PROJECT_ID) {
+  // Alleen importeren in Node.js (server-side)
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  admin = require('firebase-admin');
+  if (admin.apps.length === 0) {
     admin.initializeApp({
-      // Optionally pass credentials here if not using default env
-      // credential: admin.credential.applicationDefault(),
+      credential: admin.credential.applicationDefault(),
     });
   }
-  _admin = admin;
-  return _admin;
 }
+
+export function getAdmin() {
+  if (!admin) {
+    throw new Error('Firebase Admin not available in this environment');
+  }
+  return admin;
+}
+
