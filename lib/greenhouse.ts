@@ -1,56 +1,24 @@
 // lib/greenhouse.ts
-// Failsafe: named + default exports en alias voor oude typo.
-
-export type GHJob = {
+export type JobItem = {
   id: number;
   title: string;
-  absolute_url: string;
-  location?: { name?: string };
+  location: string;
+  url: string;
   updated_at?: string;
 };
 
-export type JPJob = {
-  id: string;
-  title: string;
-  company: string;
-  location?: string;
-  remote: boolean;
-  applyUrl: string;
-  createdAt: string;
-};
-
-async function fetchBoardJobs(board: string): Promise<GHJob[]> {
-  const url = `https://boards-api.greenhouse.io/v1/boards/${encodeURIComponent(board)}/jobs`;
-  const res = await fetch(url, { next: { revalidate: 60 } });
-  if (!res.ok) throw new Error(`Greenhouse fetch failed: ${res.status}`);
-  const json = await res.json();
-  return Array.isArray(json?.jobs) ? (json.jobs as GHJob[]) : [];
-}
-
-export async function crawlGreenhouse(board: string): Promise<GHJob[]> {
-  return fetchBoardJobs(board);
-}
-
-export async function listGreenhouseMapped(board: string): Promise<JPJob[]> {
-  const jobs = await fetchBoardJobs(board);
-  return jobs.map((j) => ({
-    id: String(j.id),
-    title: j.title ?? "Untitled",
-    company: board,
-    location: j.location?.name ?? undefined,
-    remote: (j.location?.name ?? "").toLowerCase().includes("remote"),
-    applyUrl: j.absolute_url,
-    createdAt: j.updated_at ?? new Date().toISOString()
+export async function listGreenhouseMapped(board: string): Promise<JobItem[]> {
+  const res = await fetch(`https://boards-api.greenhouse.io/v1/boards/${board}/jobs`, { next: { revalidate: 300 } });
+  if (!res.ok) {
+    throw new Error(`Greenhouse fetch failed: ${res.status} ${res.statusText}`);
+  }
+  const data = await res.json();
+  const jobs = Array.isArray(data.jobs) ? data.jobs : [];
+  return jobs.map((job: any) => ({
+    id: job.id,
+    title: job.title,
+    location: job.location?.name ?? "Unknown",
+    url: job.absolute_url,
+    updated_at: job.updated_at,
   }));
 }
-
-export async function importGreenhouseBoard(board: string): Promise<JPJob[]> {
-  return listGreenhouseMapped(board);
-}
-
-// Alias voor eerdere typefout die mogelijk nog ergens gebruikt wordt:
-export { crawlGreenhouse as crawIGreenhouse };
-
-// Default export object (laat namespace/default imports ook werken)
-const greenhouse = { crawlGreenhouse, listGreenhouseMapped, importGreenhouseBoard };
-export default greenhouse;
