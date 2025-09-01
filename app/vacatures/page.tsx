@@ -1,61 +1,32 @@
-"use client";
+import { JobCard } from "../../components/JobCard";
 
-import { useEffect, useState } from "react";
+type JobsPayload = { jobs: Array<{
+  id: string; title: string; company: string; location: string; url: string; source: string;
+}>; count: number; };
 
-type Job = {
-  id: string;
-  title: string;
-  company: string;
-  location: string;
-  url: string;
-};
+async function getJobs() {
+  const base = process.env.NEXT_PUBLIC_BASE_URL ?? "";
+  const res = await fetch(`${base}/api/jobs`, { cache: "no-store" });
+  if (!res.ok) return { jobs: [], count: 0 } as JobsPayload;
+  return (await res.json()) as JobsPayload;
+}
 
-export default function VacaturesPage() {
-  const [jobs, setJobs] = useState<Job[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchJobs() {
-      try {
-        const res = await fetch("/api/aggregate/jobs", { cache: "no-store" });
-        if (!res.ok) throw new Error("API fout");
-        const data = await res.json();
-        setJobs(data.jobs || []);
-      } catch (err) {
-        console.error("Fout bij ophalen:", err);
-        setJobs([]);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchJobs();
-  }, []);
+export default async function VacaturesPage() {
+  const { jobs, count } = await getJobs();
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Vacatures</h1>
-
-      {loading && <p>Vacatures laden...</p>}
-
-      {!loading && jobs.length === 0 && (
-        <p>Geen vacatures gevonden.</p>
-      )}
-
-      <div className="grid gap-4">
-        {jobs.map((job) => (
-          <a
-            key={job.id}
-            href={job.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block p-4 border rounded-lg hover:bg-gray-50 transition"
-          >
-            <h2 className="text-xl font-semibold">{job.title}</h2>
-            <p className="text-gray-600">{job.company}</p>
-            <p className="text-gray-500 text-sm">{job.location}</p>
-          </a>
+    <main className="mx-auto max-w-4xl p-6">
+      <h1 className="text-2xl font-bold mb-4">Vacatures ({count})</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {jobs.map((j) => (
+          <JobCard key={j.id} job={j as any} />
         ))}
       </div>
-    </div>
+      {count === 0 && (
+        <p className="text-sm text-gray-600 mt-6">
+          Nog geen data. Bezoek eerst <code>/api/admin/ingest</code>.
+        </p>
+      )}
+    </main>
   );
 }
