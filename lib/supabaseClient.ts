@@ -1,4 +1,3 @@
-// lib/supabaseClient.ts
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -8,12 +7,10 @@ if (!supabaseUrl || !supabaseKey) {
   throw new Error('Missing Supabase environment variables');
 }
 
-// Single, shared client (no exported "createClient" function anywhere).
+// Singleton client
 export const supabase = createSupabaseClient(supabaseUrl, supabaseKey);
 
-// Optional helper for existing call sites
+// Helper om compatibel te blijven
 export function getSupabaseClient() {
   return supabase;
 }
-
-export default supabase;
