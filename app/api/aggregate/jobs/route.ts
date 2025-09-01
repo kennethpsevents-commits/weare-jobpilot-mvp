@@ -2,10 +2,13 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const res = await fetch("https://your-crawler-service-url.com/jobs");
-    const jobs = await res.json();
-    return NextResponse.json({ jobs });
-  } catch (e) {
-    return NextResponse.json({ jobs: [], error: "Crawler API not reachable" });
+    const url = process.env.NEXT_PUBLIC_SUPABASE_FUNCTIONS_URL || "https://YOUR_PROJECT.functions.supabase.co";
+    const res = await fetch(`${url}/get-jobs?sort=title&order=asc`, {
+      headers: { apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "" }
+    });
+    const data = await res.json();
+    return NextResponse.json({ jobs: data.jobs || [] });
+  } catch {
+    return NextResponse.json({ jobs: [] }, { status: 200 });
   }
 }
