@@ -1,7 +1,7 @@
 // lib/firebaseAdmin.ts
-// No-op fallback: geen hard dependency op 'firebase-admin' tijdens build.
+// No-op fallback: voorkomt build errors op Vercel
 export function getAdmin() {
   throw new Error(
-    'Firebase Admin is disabled in this environment. Remove imports, or provide proper server-only initialization.'
+    "Firebase Admin is disabled in this environment. Remove imports, or provide proper server-only initialization."
   );
 }
