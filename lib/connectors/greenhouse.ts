@@ -26,7 +26,7 @@ export async function fetchGreenhouseBoard(boardToken: string): Promise<Job[]> {
       j.offices?.[0]?.name ||
       "Remote / Unspecified",
     url: j.absolute_url,
-    source: "greenhouse" as const,
+    source: "greenhouse",
     updatedAt: j.updated_at,
   }));
 }
