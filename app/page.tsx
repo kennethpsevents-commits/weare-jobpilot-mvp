@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="max-w-3xl mx-auto p-6">
+    <div>
       <h1 className="text-4xl font-bold mb-4">WeAreJobPilot</h1>
       <p className="mb-6 text-lg">
         Uw AI-Aangedreven Baanreis Begint Hier.
@@ -23,6 +23,6 @@ export default function Home() {
           Probeer AI assistent
         </Link>
       </div>
-    </main>
+    </div>
   );
 }
